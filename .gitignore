@@ -1,0 +1,5 @@
+.codex
+.venv/
+__pycache__/
+*.pdf
+*.png

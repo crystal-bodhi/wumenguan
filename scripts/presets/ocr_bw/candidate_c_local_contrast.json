@@ -1,0 +1,11 @@
+{
+  "name": "candidate-c-local-contrast",
+  "params": {
+    "binarization_method": "local_contrast",
+    "min_component_area_floor": 10,
+    "min_component_area_ratio": 0.000005,
+    "border_trim_pixels": 2,
+    "local_background_sigma": 15,
+    "local_contrast_threshold": 40
+  }
+}
