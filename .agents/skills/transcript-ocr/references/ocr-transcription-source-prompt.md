@@ -2,7 +2,7 @@ You are given a scan image of the public-domain Zen text *Wumenguan*. Your task 
 
 ## Requirements:
 
-1. Work only from the provided scan image.
+1. Work only from the provided scan image. Do not apply binarization or any additional filters.
 2. Do not use any external sources for correction, completion, normalization, comparison, or inference. This includes editions, translations, online texts, databases, commentaries, or prior knowledge of the work.
 3. Transcribe only what is visibly present in the scan. Do not silently repair damaged, missing, blurred, or ambiguous glyphs.
 4. Preserve the source as faithfully as possible:

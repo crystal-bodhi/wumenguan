@@ -14,7 +14,7 @@ Produce a strict OCR transcription of the visible source text in a single scan i
 - The input is a scan image of a source page.
 - The task is page-level transcription of visible source text only.
 - The output must preserve source line structure and reading order.
-- The output must be saved as a Markdown transcript artifact under `data/transcripts/`.
+- The output must be saved as a Markdown transcript artifact under `data/transcripts/codex/`.
 
 ## Do Not Use When
 
@@ -35,7 +35,7 @@ Produce a strict OCR transcription of the visible source text in a single scan i
 2. Strip the file extension.
 3. If the stem contains `--`, keep only the segment before the first `--`.
 4. Append `--transcript.md`.
-5. Save the file to `data/transcripts/<canonical-stub>--transcript.md`.
+5. Save the file to `data/transcripts/codex/<canonical-stub>--transcript.md`.
 
 ## Required Flow
 
@@ -75,6 +75,7 @@ Use exactly this schema:
 ## Rules
 
 - Work only from the provided scan image.
+- Do not apply binarization or any other filters.
 - Do not use external sources for correction, completion, normalization, comparison, or inference.
 - Do not silently repair damaged, missing, blurred, or ambiguous glyphs.
 - Do not merge lines.
@@ -83,7 +84,7 @@ Use exactly this schema:
 
 ## Success Checks
 
-- The output file exists under `data/transcripts/` with the correct canonical name.
+- The output file exists under `data/transcripts/codex/` with the correct canonical name.
 - The file contains only one Markdown table.
 - The table has exactly three columns: `Line`, `Transcription`, `Uncertainty / Comments`.
 - There is one row per source line in reading order.
