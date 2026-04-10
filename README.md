@@ -6,7 +6,11 @@ OCR Version: [NDL12865429_無門關_1卷--grayscale.pdf](data/source/pdf/NDL1286
 
 Tools & Process: [scripts/](scripts/)
 
-License: [MIT](LICENSE.md)
+---
+
+Software License: [MIT](LICENSE.md)
+
+Transcript & Grayscale Images: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
 
 ---
 
