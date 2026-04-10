@@ -1,31 +1,13 @@
-## Setup Python
+# Public Domain Transcript of *Wumenguan*
 
+Source: [National Diet Library](https://commons.wikimedia.org/wiki/File%3ANDL12865429_%E7%84%A1%E9%96%80%E9%97%9C_1%E5%8D%B7.pdf)
 
-**Create a Python virtual environment**
+OCR Version: [NDL12865429_無門關_1卷--grayscale.pdf](data/source/pdf/NDL12865429_無門關_1卷--grayscale.pdf)
 
-- `python3 -m venv .venv`
+Tools & Process: [scripts/](scripts/)
 
+License: [MIT](LICENSE.md)
 
-**Load virtual environment**
+---
 
-- Linux/macOS: `source .venv/bin/activate`
-- Windows: `.venv\Scripts\activate`
-
-
-**Install package requirements**
-- `pip install -r scripts/requirements.txt`
-
-
-## Process PDF
-
-```bash
-### Extract images from PDF
-python scripts/ndl_wumenguan_extract.py
-
-### Crop individual pages
-python scripts/ndl_wumenguan_crop.py
-
-### Convert to fidelity grayscale
-python scripts/ocr_gray.py
-```
-
+[Wumenguan transcript goes here]
