@@ -8,6 +8,7 @@ import fitz  # PyMuPDF
 from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = None
+PNG_DPI = 300
 
 
 def pixmap_to_pil(pix: fitz.Pixmap) -> Image.Image:
@@ -28,7 +29,7 @@ def pixmap_to_pil(pix: fitz.Pixmap) -> Image.Image:
         del converted
 
 
-def extract_images(pdf_path: Path, outdir: Path, dpi: int = 300) -> int:
+def extract_images(pdf_path: Path, outdir: Path) -> int:
     outdir.mkdir(parents=True, exist_ok=True)
 
     saved = 0
@@ -50,7 +51,8 @@ def extract_images(pdf_path: Path, outdir: Path, dpi: int = 300) -> int:
 
                 saved += 1
                 out_path = outdir / f"spread_{saved:04d}.png"
-                img.save(out_path, format="PNG", dpi=(dpi, dpi))
+                img.save(out_path, format="PNG", dpi=(PNG_DPI, PNG_DPI))
+                print(f"Extracted {pdf_path.as_posix()} -> {out_path.name}", flush=True)
 
     return saved
 
@@ -59,21 +61,18 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Extract embedded images from a PDF and save them as PNG files."
     )
+    parser.add_argument("-o", "--outdir", required=True, help="Output directory")
     parser.add_argument("pdf", help="Input PDF file")
-    parser.add_argument("--outdir", default="output", help="Output directory")
-    parser.add_argument("--dpi", type=int, default=300, help="PNG DPI metadata (default: 300)")
     return parser.parse_args()
 
 
-def validate_args(pdf_path: Path, dpi: int) -> None:
+def validate_args(pdf_path: Path) -> None:
     if not pdf_path.exists():
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
     if not pdf_path.is_file():
         raise FileNotFoundError(f"Not a file: {pdf_path}")
     if pdf_path.suffix.lower() != ".pdf":
         raise ValueError(f"Input must be a PDF file: {pdf_path}")
-    if dpi <= 0:
-        raise ValueError("DPI must be a positive integer")
 
 
 def main() -> int:
@@ -82,8 +81,8 @@ def main() -> int:
     outdir = Path(args.outdir).expanduser()
 
     try:
-        validate_args(pdf_path, args.dpi)
-        count = extract_images(pdf_path=pdf_path, outdir=outdir, dpi=args.dpi)
+        validate_args(pdf_path)
+        count = extract_images(pdf_path=pdf_path, outdir=outdir)
     except KeyboardInterrupt:
         print("Interrupted. Extraction stopped before completion.", file=sys.stderr)
         return 130

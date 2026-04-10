@@ -25,22 +25,15 @@ This assumes spread numbering starts at 0001, where:
 
 from __future__ import annotations
 
+import argparse
 import re
+import sys
 from pathlib import Path
 
 from PIL import Image
 
-INPUT_GLOB = "scans/full_spreads/*.png"
-OUTPUT_DIR = Path("scans/cropped_pages")
-
 LEFT_BOX = (720, 1090, 2060, 3085)
 RIGHT_BOX = (3755, 1100, 2115, 3070)
-
-
-def ensure_dirs(paths: list[Path]) -> None:
-    for path in paths:
-        path.mkdir(parents=True, exist_ok=True)
-
 
 def parse_spread_index(path: Path) -> int:
     match = re.search(r"spread_(\d+)\.png$", path.name)
@@ -62,12 +55,12 @@ def spread_to_page_numbers(spread_index: int) -> tuple[int, int]:
     return left_page, right_page
 
 
-def output_paths_for_source(source: Path) -> tuple[Path, Path]:
+def output_paths_for_source(source: Path, outdir: Path) -> tuple[Path, Path]:
     spread_index = parse_spread_index(source)
     left_page, right_page = spread_to_page_numbers(spread_index)
 
-    output_left = OUTPUT_DIR / f"page_{left_page:04d}--cropped.png"
-    output_right = OUTPUT_DIR / f"page_{right_page:04d}--cropped.png"
+    output_left = outdir / f"page_{left_page:04d}--cropped.png"
+    output_right = outdir / f"page_{right_page:04d}--cropped.png"
     return output_left, output_right
 
 
@@ -88,8 +81,8 @@ def crop_box(img: Image.Image, box: tuple[int, int, int, int]) -> Image.Image:
     return img.crop((x, y, x + w, y + h))
 
 
-def process_one(source: Path) -> None:
-    output_left, output_right = output_paths_for_source(source)
+def process_one(source: Path, outdir: Path) -> None:
+    output_left, output_right = output_paths_for_source(source, outdir)
 
     with Image.open(source) as img:
         width, height = img.size
@@ -106,18 +99,62 @@ def process_one(source: Path) -> None:
     print(f"Cropped {source.as_posix()} -> {output_right.name}, {output_left.name}")
 
 
-def main() -> None:
-    ensure_dirs([OUTPUT_DIR])
-
-    sources = sorted(Path().glob(INPUT_GLOB))
-    if not sources:
-        raise FileNotFoundError(f"No input files found for glob: {INPUT_GLOB}")
-
+def crop_spreads(indir: Path, outdir: Path) -> int:
+    outdir.mkdir(parents=True, exist_ok=True)
+    sources = sorted(indir.glob("*.png"))
     for source in sources:
-        process_one(source)
+        process_one(source, outdir)
+    return len(sources)
 
-    print(f"Done. Processed {len(sources)} spread(s).")
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Crop left and right page regions from full-spread PNG images."
+    )
+    parser.add_argument("indir", help="Input directory containing spread_*.png files")
+    parser.add_argument("-o", "--outdir", default="output", help="Output directory")
+    return parser.parse_args()
+
+
+def validate_args(indir: Path) -> None:
+    if not indir.exists():
+        raise FileNotFoundError(f"Input directory not found: {indir}")
+    if not indir.is_dir():
+        raise FileNotFoundError(f"Not a directory: {indir}")
+
+    sources = sorted(indir.glob("*.png"))
+    if not sources:
+        raise FileNotFoundError(f"No input files found in directory: {indir}")
+
+
+def main() -> int:
+    args = parse_args()
+    indir = Path(args.indir).expanduser()
+    outdir = Path(args.outdir).expanduser()
+
+    try:
+        validate_args(indir)
+        count = crop_spreads(indir=indir, outdir=outdir)
+    except KeyboardInterrupt:
+        print("Interrupted. Cropping stopped before completion.", file=sys.stderr)
+        return 130
+    except FileNotFoundError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 2
+    except ValueError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 2
+    except Exception as exc:
+        print(f"Error: cropping failed: {exc}", file=sys.stderr)
+        return 1
+
+    if count == 0:
+        print(f"No input images found in {indir}")
+        return 0
+
+    print(f"Saved {count * 2} cropped page image(s) to {outdir}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
