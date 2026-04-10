@@ -9,6 +9,8 @@ from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = None
 PNG_DPI = 300
+DEFAULT_INPUT_PDF = Path("data/source/pdf/NDL12865429_無門關_1卷.pdf")
+DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/full_spreads")
 
 
 def pixmap_to_pil(pix: fitz.Pixmap) -> Image.Image:
@@ -61,8 +63,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Extract embedded images from a PDF and save them as PNG files."
     )
-    parser.add_argument("-o", "--outdir", required=True, help="Output directory")
-    parser.add_argument("pdf", help="Input PDF file")
+    parser.add_argument("-o", "--outdir", default=str(DEFAULT_OUTPUT_DIR), help="Output directory")
+    parser.add_argument("pdf", nargs="?", default=str(DEFAULT_INPUT_PDF), help="Input PDF file")
     return parser.parse_args()
 
 

@@ -32,6 +32,8 @@ from pathlib import Path
 
 from PIL import Image
 
+DEFAULT_INPUT_DIR = Path("data/branch_a_preservation/full_spreads")
+DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/page_views")
 LEFT_BOX = (720, 1090, 2060, 3085)
 RIGHT_BOX = (3755, 1100, 2115, 3070)
 
@@ -111,8 +113,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Crop left and right page regions from full-spread PNG images."
     )
-    parser.add_argument("indir", help="Input directory containing spread_*.png files")
-    parser.add_argument("-o", "--outdir", default="output", help="Output directory")
+    parser.add_argument("indir", nargs="?", default=str(DEFAULT_INPUT_DIR), help="Input directory containing spread_*.png files")
+    parser.add_argument("-o", "--outdir", default=str(DEFAULT_OUTPUT_DIR), help="Output directory")
     return parser.parse_args()
 
 
