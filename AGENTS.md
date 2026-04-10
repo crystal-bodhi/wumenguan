@@ -6,7 +6,7 @@ This repository stores strict source-faithful OCR transcript artifacts generated
 
 ## Output Location
 
-- Save transcript outputs under `data/transcripts/`.
+- Save transcript outputs under `data/transcripts/codex/`.
 - Produce one Markdown transcript file per source image.
 
 ## Naming Convention
@@ -15,7 +15,7 @@ This repository stores strict source-faithful OCR transcript artifacts generated
 - Strip the file extension.
 - If the remaining stem contains `--`, keep only the segment before the first `--`.
 - Append `--transcript.md`.
-- Example: `page_0001--cropped--ocr-gray.png` becomes `data/transcripts/page_0001--transcript.md`.
+- Example: `page_0001--cropped--ocr-gray.png` becomes `data/transcripts/codex/page_0001--transcript.md`.
 
 ## Mandatory Skill Usage
 
@@ -24,4 +24,4 @@ This repository stores strict source-faithful OCR transcript artifacts generated
 
 ## Completion Standard
 
-- A transcript task is not complete until the Markdown output file exists at the required path and matches the skill's table-only output contract.
+- A transcript task is not complete until the Markdown output file exists at the required path and matches the skill's full output contract: the Markdown table first, then a line-by-line transcription block below it, and nothing else.

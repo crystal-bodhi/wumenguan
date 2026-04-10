@@ -1,6 +1,6 @@
 ---
 name: transcript-ocr
-description: Use this skill to create a strict source-faithful OCR transcript from a single scan image and save it as a Markdown table in data/transcripts/. Trigger for page-level transcription of visible source text only. Do not use for translation, normalization, cleanup, reconstruction, multi-page synthesis, or correction from external sources.
+description: Use this skill to create a strict source-faithful OCR transcript from a single scan image and save it in data/transcripts/codex/ as a Markdown table followed by a plain line-by-line transcription block. Trigger for page-level transcription of visible source text only. Do not use for translation, normalization, cleanup, reconstruction, multi-page synthesis, or correction from external sources.
 ---
 
 # Transcript OCR
@@ -57,20 +57,38 @@ Produce a strict OCR transcription of the visible source text in a single scan i
 6. Exclude non-textual material from the transcription itself.
    - Do not merge seals, stains, bleed-through, page numbers, handwritten notes, or marginal marks into the source text.
    - Note them in the comments column only when relevant to uncertainty or interference.
-7. Output a single Markdown table with one row per source line and only these columns:
+7. Output a Markdown table with one row per source line and only these columns:
    - `Line`
    - `Transcription`
    - `Uncertainty / Comments`
 8. Number lines in reading order starting at 1.
-9. Write only the table content to the transcript file. Do not add prose before or after the table.
+9. After the table, add a horizontal rule line containing exactly `---`.
+10. Below the horizontal rule, output the transcription again as plain line-by-line text in the same reading order.
+    - Include the same uncertainty markup used in the table transcription column.
+    - Output one source line per output line.
+    - Do not add line numbers, bullets, commentary, or any extra labels.
+11. Write only the table, the horizontal rule, and the plain line-by-line transcription block to the transcript file. Do not add prose before, between, or after them.
 
 ## Output Contract
 
-Use exactly this schema:
+Use exactly this structure:
 
 | Line | Transcription | Uncertainty / Comments |
 | --- | --- | --- |
 | 1 | ... | None |
+
+---
+
+...
+
+Requirements for this structure:
+
+- The table must appear first.
+- After the table, include a horizontal rule line containing exactly `---`.
+- After the horizontal rule, include a plain line-by-line transcription block.
+- The plain transcription block must repeat the table's `Transcription` values in reading order.
+- Preserve uncertainty markup such as `[?]` and `[illegible]` in the plain transcription block.
+- Output nothing else.
 
 ## Rules
 
@@ -80,14 +98,18 @@ Use exactly this schema:
 - Do not silently repair damaged, missing, blurred, or ambiguous glyphs.
 - Do not merge lines.
 - Do not reconstruct missing text from context.
-- Do not output prose before or after the table.
+- Do not output prose before the table, between the table and the horizontal rule, or after the plain transcription block.
+- Do not add any section headers, labels, or commentary around the plain transcription block.
 
 ## Success Checks
 
 - The output file exists under `data/transcripts/codex/` with the correct canonical name.
-- The file contains only one Markdown table.
+- The file begins with one Markdown table.
 - The table has exactly three columns: `Line`, `Transcription`, `Uncertainty / Comments`.
 - There is one row per source line in reading order.
+- After the table, the file contains a horizontal rule line containing exactly `---`.
+- After the horizontal rule, the file contains a plain line-by-line transcription block with one output line per source line.
+- Each plain transcription line matches the corresponding table `Transcription` value, including uncertainty markup.
 - Every unclear area is explicitly marked instead of guessed.
 - Non-text interference is excluded from the transcription column.
 

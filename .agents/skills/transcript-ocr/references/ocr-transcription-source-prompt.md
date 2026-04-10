@@ -19,15 +19,30 @@ You are given a scan image of the public-domain Zen text *Wumenguan*. Your task 
 
 ## Output format:
 
-Return a single Markdown table with one row per source line and these columns only:
+Return the result in exactly two sections and nothing else:
+
+1. A single Markdown table with one row per source line and these columns only:
 
 | Line | Transcription | Uncertainty / Comments |
 
-### Column rules:
+2. A line-by-line transcription block placed immediately below the table, separated from the table by a Markdown horizontal rule:
+
+---
+
+<one transcription line per source line, in reading order>
+
+### Table rules:
 
 - `Line`: line number on the page in reading order, starting at 1
 - `Transcription`: the OCR result for that source line only
 - `Uncertainty / Comments`: identify uncertain glyphs, damaged areas, non-text interference, or state `None` if the line is clear
+
+### Transcription block rules:
+
+- Repeat the transcription line by line in reading order
+- Use exactly the same text as in the table’s `Transcription` column
+- Preserve uncertainty markup such as `[?]` and `[illegible]`
+- Do not add line numbers, bullets, commentary, or headings
 
 ## Additional rules:
 
@@ -35,4 +50,4 @@ Return a single Markdown table with one row per source line and these columns on
 
 - Do not reconstruct missing text from context.
 
-- Do not output prose before or after the table.
+- Do not output prose before the table, between the table and the horizontal rule, or after the transcription block.
