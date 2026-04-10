@@ -293,12 +293,29 @@ def save_output(infile: str | Path, outdir: str | Path, preset: dict[str, object
 
     Image.fromarray(gray).save(image_path)
     save_json(metadata_path, meta)
+    print(f"OCR-gray {infile.as_posix()} -> {image_path.name}", flush=True)
 
     return {
         "input": str(infile),
         "ocr_gray": str(image_path),
         "meta": meta,
     }
+
+
+def expand_inputs(inputs: list[str]) -> list[Path]:
+    expanded: list[Path] = []
+    for raw in inputs:
+        path = Path(raw).expanduser()
+        if path.is_dir():
+            directory_files = sorted(
+                candidate for candidate in path.iterdir() if candidate.is_file() and candidate.suffix.lower() == ".png"
+            )
+            if not directory_files:
+                raise FileNotFoundError(f"No PNG input files found in directory: {path}")
+            expanded.extend(directory_files)
+            continue
+        expanded.append(path)
+    return expanded
 
 
 def main() -> None:
@@ -311,7 +328,8 @@ def main() -> None:
     args = parser.parse_args()
 
     preset = load_preset(args.preset)
-    reports = [save_output(path, args.outdir, preset) for path in args.inputs]
+    input_paths = expand_inputs(args.inputs)
+    reports = [save_output(path, args.outdir, preset) for path in input_paths]
     print("Done.")
 
 
