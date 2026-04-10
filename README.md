@@ -1,24 +1,20 @@
 ## Setup Python
 
-```bash
-## Create a Python virtual environment
-python3 -m venv .venv
-```
 
-```bash
-## Load virtual environment
+**Create a Python virtual environment**
 
-### Linux/macOS:
-source .venv/bin/activate
+- `python3 -m venv .venv`
 
-### Windows:
-.venv\Scripts\activate
-```
 
-```bash
-## Install package requirements
-pip install -r scripts/requirements.txt
-```
+**Load virtual environment**
+
+- Linux/macOS: `source .venv/bin/activate`
+- Windows: `.venv\Scripts\activate`
+
+
+**Install package requirements**
+- `pip install -r scripts/requirements.txt`
+
 
 ## Process PDF
 
