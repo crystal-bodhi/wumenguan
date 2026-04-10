@@ -1,0 +1,47 @@
+{
+  "final_image_shape": [
+    3062,
+    2107
+  ],
+  "estimated_deskew_angle": 0.5199970006942749,
+  "deskew_applied": true,
+  "crop_amounts": {
+    "top": 32,
+    "bottom": 0,
+    "left": 0,
+    "right": 32
+  },
+  "restored_border_size": 12,
+  "effective_background_sigma": 32,
+  "denoise_applied": false,
+  "gamma_used": 1.0,
+  "pipeline_version": "conservative_grayscale_v1",
+  "grayscale_only": true,
+  "preset_name": "ocr_gray_baseline",
+  "preset_path": "scripts/presets/ocr_gray/ocr_gray_baseline.json",
+  "page_key": "page_0075--cropped",
+  "resolved_params": {
+    "deskew_enabled": true,
+    "deskew_angle_range": 2.5,
+    "deskew_coarse_step": 0.1,
+    "deskew_refine_step": 0.02,
+    "deskew_skip_threshold": 0.08,
+    "border_normalization_enabled": true,
+    "border_inspect_width_scale": 0.015,
+    "border_crop_threshold": 25.0,
+    "border_restore_size": 12,
+    "normalize_bg_enabled": true,
+    "normalize_bg_sigma_scale": 0.015,
+    "normalize_bg_sigma_min": 15,
+    "normalize_bg_sigma_max": 35,
+    "normalize_divisor_offset": 1.0,
+    "normalize_target_bg": 220.0,
+    "contrast_percentile_low": 2.0,
+    "contrast_percentile_high": 99.5,
+    "gamma": 1.0,
+    "denoise_enabled": false,
+    "denoise_h": 5.0,
+    "denoise_template_window_size": 7,
+    "denoise_search_window_size": 21
+  }
+}
