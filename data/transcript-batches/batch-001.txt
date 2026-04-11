@@ -1,0 +1,10 @@
+data/branch_b_fidelity_gray/fidelity_gray/page_0010--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0011--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0012--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0013--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0014--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0015--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0016--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0017--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0018--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/fidelity_gray/page_0019--cropped--ocr-gray.png
