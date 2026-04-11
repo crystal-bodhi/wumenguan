@@ -1,6 +1,6 @@
 ---
 name: transcript-ocr
-description: Use this skill to create a strict source-faithful OCR transcript from a single scan image and save it in data/transcripts/codex/ as a Markdown table followed by a plain line-by-line transcription block. Trigger for page-level transcription of visible source text only. Do not use for translation, normalization, cleanup, reconstruction, multi-page synthesis, or correction from external sources.
+description: Use this skill to create a strict source-faithful OCR transcript from a single scan image and save it under data/transcripts/codex/ as a Markdown transcript artifact. Trigger for page-level transcription of visible source text only. Do not use for translation, normalization, cleanup, reconstruction, multi-page synthesis, or correction from external sources.
 ---
 
 # Transcript OCR
@@ -19,7 +19,7 @@ Produce a strict OCR transcription of the visible source text in a single scan i
 ## Do Not Use When
 
 - The user wants translation, explanation, summary, or commentary.
-- The user wants normalized, modernized, or corrected text.
+- The user wants normalized, modernized, corrected, or cleaned text.
 - The user wants reconstruction of damaged or missing characters from context.
 - The task requires comparison against editions, databases, or any external source.
 - The task asks for one merged transcript across multiple pages.
@@ -51,23 +51,36 @@ Produce a strict OCR transcription of the visible source text in a single scan i
    - do not modernize spelling, punctuation, spacing, or character variants
    - do not normalize to a standard printed edition
 5. Handle uncertainty explicitly:
-   - use `[illegible]` for unreadable glyphs
-   - use square brackets around uncertain portions, such as `無[?]關`
-   - do not guess
+   - Keep inline uncertainty markup minimal and source-facing.
+   - Use `[illegible]` when no plausible reading can be defended from the image.
+   - Use `[字?]` when one likely reading is visible but low confidence.
+   - Use `[甲/乙?]` when two or more readings remain plausible and no ranking can be justified.
+   - Use `[甲>乙>丙?]` when multiple readings remain plausible and the evidence supports an ordinal confidence ranking.
+   - Use `[甲=乙>丙?]` when two readings are tied and both outrank a weaker alternative.
+   - Do not use bare `[?]` when a candidate reading can be stated.
+   - Do not use numeric probabilities or percentages.
+   - In `Uncertainty / Comments`, write `None` only when the line is fully clear.
+   - Otherwise, begin the cell with one or more fixed codes in ascending order:
+     - `U0` unreadable, no plausible reading
+     - `U1` one likely reading, low confidence
+     - `U2` multiple plausible readings
+     - `U3` structural damage obscures one component only
+     - `U4` bleed-through interference
+     - `U5` likely nonstandard or variant glyph
+     - `U6` segmentation or line-break uncertainty
+   - After the code sequence, add `: short note` only when it adds review value.
+   - See `references/uncertainty-notation-standard.md` for the detailed notation standard.
 6. Exclude non-textual material from the transcription itself.
    - Do not merge seals, stains, bleed-through, page numbers, handwritten notes, or marginal marks into the source text.
    - Note them in the comments column only when relevant to uncertainty or interference.
-7. Output a Markdown table with one row per source line and only these columns:
-   - `Line`
-   - `Transcription`
-   - `Uncertainty / Comments`
+7. Output two sections and nothing else:
+   - first, a single Markdown table with one row per source line and only these columns:
+     - `Line`
+     - `Transcription`
+     - `Uncertainty / Comments`
+   - second, after a horizontal rule line `---`, a plain line-by-line transcription block that repeats the `Transcription` column exactly
 8. Number lines in reading order starting at 1.
-9. After the table, add a horizontal rule line containing exactly `---`.
-10. Below the horizontal rule, output the transcription again as plain line-by-line text in the same reading order.
-    - Include the same uncertainty markup used in the table transcription column.
-    - Output one source line per output line.
-    - Do not add line numbers, bullets, commentary, or any extra labels.
-11. Write only the table, the horizontal rule, and the plain line-by-line transcription block to the transcript file. Do not add prose before, between, or after them.
+9. Write only the required output content to the transcript file. Do not add prose before, between, or after the two required sections.
 
 ## Output Contract
 
@@ -81,15 +94,6 @@ Use exactly this structure:
 
 ...
 
-Requirements for this structure:
-
-- The table must appear first.
-- After the table, include a horizontal rule line containing exactly `---`.
-- After the horizontal rule, include a plain line-by-line transcription block.
-- The plain transcription block must repeat the table's `Transcription` values in reading order.
-- Preserve uncertainty markup such as `[?]` and `[illegible]` in the plain transcription block.
-- Output nothing else.
-
 ## Rules
 
 - Work only from the provided scan image.
@@ -98,19 +102,18 @@ Requirements for this structure:
 - Do not silently repair damaged, missing, blurred, or ambiguous glyphs.
 - Do not merge lines.
 - Do not reconstruct missing text from context.
-- Do not output prose before the table, between the table and the horizontal rule, or after the plain transcription block.
-- Do not add any section headers, labels, or commentary around the plain transcription block.
+- Do not output prose before, between, or after the two required output sections.
 
 ## Success Checks
 
 - The output file exists under `data/transcripts/codex/` with the correct canonical name.
-- The file begins with one Markdown table.
+- The file begins with exactly one Markdown table.
 - The table has exactly three columns: `Line`, `Transcription`, `Uncertainty / Comments`.
+- The table is followed by a horizontal rule line `---` and then a plain line-by-line transcription block.
+- The plain block repeats the `Transcription` column exactly, including uncertainty markup.
 - There is one row per source line in reading order.
-- After the table, the file contains a horizontal rule line containing exactly `---`.
-- After the horizontal rule, the file contains a plain line-by-line transcription block with one output line per source line.
-- Each plain transcription line matches the corresponding table `Transcription` value, including uncertainty markup.
 - Every unclear area is explicitly marked instead of guessed.
+- Every unclear line begins its comment cell with at least one `U` code.
 - Non-text interference is excluded from the transcription column.
 
 ## Failure Conditions
@@ -121,6 +124,7 @@ Stop and report the issue instead of fabricating output when:
 - the image does not contain a readable source page
 - the requested task is translation, normalization, or reconstruction rather than strict transcription
 
-## Reference
+## References
 
-- See `references/ocr-transcription-source-prompt.md` for the source prompt this skill was adapted from.
+- `references/ocr-transcription-source-prompt.md`
+- `references/uncertainty-notation-standard.md`
