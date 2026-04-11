@@ -24,4 +24,5 @@ This repository stores strict source-faithful OCR transcript artifacts generated
 
 ## Completion Standard
 
-- A transcript task is not complete until the Markdown output file exists at the required path and matches the skill's full output contract: the Markdown table first, then a line-by-line transcription block below it, and nothing else.
+- A transcript task is not complete until the Markdown output file exists at the required path.
+- The file must contain exactly two sections: the required Markdown table, then `---`, then the plain line-by-line transcription block.
