@@ -3,9 +3,10 @@ $transcript-ocr-batch
 Process the files listed in `data/transcript-batches/batch-NNNN.txt`.
 
 Requirements:
-- treat each listed file as a separate execution unit
-- for each file, invoke `$transcript-ocr` in an isolated child run
-- do not merge, compare, or cross-reference pages across runs
+- treat each listed file as a separate isolated child run
+- use `$transcript-ocr` for each child run
+- do not merge, compare, reconcile, or cross-reference pages across runs
 - write each transcript to its repository-convention output path under `data/transcripts/codex/`
-- save per-run logs/traces so results can be audited afterward
-- at the end, report which files succeeded, which failed, and where the outputs were written
+- preserve auditable per-run artifacts under `data/transcripts/codex/_batch_runs/`, including prompts, logs, traces, `status.tsv`, `summary.json`, and `summary.md`
+- do not overwrite an existing required transcript output by default
+- at the end, report per-file outcomes as `completed`, `failed`, or `blocked`, with reasons and artifact locations
