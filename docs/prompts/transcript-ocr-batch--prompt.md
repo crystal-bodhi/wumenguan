@@ -1,6 +1,6 @@
 $transcript-ocr-batch
 
-Process the files listed in `data/transcript-batches/batch-NNNN.txt`.
+Process the files listed in `data/transcript-batches/batch-NNN.txt`.
 
 Requirements:
 - treat each listed file as a separate isolated child run
