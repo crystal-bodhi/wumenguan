@@ -1,0 +1,78 @@
+{
+  "batch_id": "20260410T193544-pages-0010-0019",
+  "status": "completed",
+  "input_count": 10,
+  "success_count": 10,
+  "failure_count": 0,
+  "status_file": "data/transcripts/codex/_batch_runs/20260410T193544-pages-0010-0019/status.tsv",
+  "prompts_dir": "data/transcripts/codex/_batch_runs/20260410T193544-pages-0010-0019/prompts",
+  "logs_dir": "data/transcripts/codex/_batch_runs/20260410T193544-pages-0010-0019/logs",
+  "traces_dir": "data/transcripts/codex/_batch_runs/20260410T193544-pages-0010-0019/traces",
+  "items": [
+    {
+      "page": "0010",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0010--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0010--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0011",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0011--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0011--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0012",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0012--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0012--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0013",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0013--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0013--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0014",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0014--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0014--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0015",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0015--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0015--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0016",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0016--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0016--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0017",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0017--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0017--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0018",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0018--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0018--transcript.md",
+      "exit_code": 0
+    },
+    {
+      "page": "0019",
+      "input_image": "data/branch_b_fidelity_gray/fidelity_gray/page_0019--cropped--ocr-gray.png",
+      "output_file": "data/transcripts/codex/page_0019--transcript.md",
+      "exit_code": 0
+    }
+  ],
+  "observations": [
+    "A first in-sandbox child invocation failed because the Codex CLI needed network access; the completed batch was run with escalated network access.",
+    "All ten completed children produced transcripts in the required destination and wrote per-page traces and stderr logs.",
+    "Several child traces showed failed exploratory helper commands such as unavailable `magick` or `tesseract`, or oversized `convert` operations, but those runs recovered and still completed successfully."
+  ]
+}
