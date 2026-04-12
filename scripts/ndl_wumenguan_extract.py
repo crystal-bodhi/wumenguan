@@ -10,7 +10,7 @@ from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 PNG_DPI = 300
 DEFAULT_INPUT_PDF = Path("data/source/pdf/NDL12865429_無門關_1卷.pdf")
-DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/full_spreads")
+DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/NDL/pdf_extract")
 
 
 def pixmap_to_pil(pix: fitz.Pixmap) -> Image.Image:

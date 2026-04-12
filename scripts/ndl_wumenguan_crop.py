@@ -32,8 +32,8 @@ from pathlib import Path
 
 from PIL import Image
 
-DEFAULT_INPUT_DIR = Path("data/branch_a_preservation/full_spreads")
-DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/page_views")
+DEFAULT_INPUT_DIR = Path("data/branch_a_preservation/NDL/pdf_extract")
+DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/NDL/page_views")
 LEFT_BOX = (720, 1090, 2060, 3085)
 RIGHT_BOX = (3755, 1100, 2115, 3070)
 
