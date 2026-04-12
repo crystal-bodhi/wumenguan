@@ -306,8 +306,12 @@ def derive_output_dir(input_image: Path, output_dir: str | None) -> Path:
     return DEFAULT_OUTPUT_DIR
 
 
+def page_output_dir(output_dir: Path, input_image: Path) -> Path:
+    return output_dir / input_image.stem
+
+
 def output_path_for_column(output_dir: Path, input_image: Path, column_index: int) -> Path:
-    return output_dir / f"{input_image.stem}--col-{column_index:02d}.png"
+    return page_output_dir(output_dir, input_image) / f"{input_image.stem}--col-{column_index:02d}.png"
 
 
 def print_plan(
@@ -325,9 +329,10 @@ def print_plan(
         bottom=bottom,
         image_height=image_height,
     )
+    page_dir = page_output_dir(output_dir, input_image)
     plan = {
         "input_image": input_image.as_posix(),
-        "output_dir": output_dir.as_posix(),
+        "output_dir": page_dir.as_posix(),
         "order": order,
         "top": top,
         "bottom": bottom,
@@ -370,7 +375,8 @@ def crop_columns(
     bottom: int,
     columns: list[ColumnSlice],
 ) -> int:
-    output_dir.mkdir(parents=True, exist_ok=True)
+    page_dir = page_output_dir(output_dir, input_image)
+    page_dir.mkdir(parents=True, exist_ok=True)
 
     saved = 0
     with Image.open(input_image) as image:
@@ -475,7 +481,7 @@ def main() -> int:
             bottom=bottom,
             columns=columns,
         )
-        print(f"Saved {count} column image(s) to {output_dir.as_posix()}")
+        print(f"Saved {count} column image(s) to {page_output_dir(output_dir, input_image).as_posix()}")
         return 0
     except KeyboardInterrupt:
         print("Interrupted. Column crop stopped before completion.", file=sys.stderr)

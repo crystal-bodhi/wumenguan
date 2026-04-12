@@ -30,10 +30,10 @@ Dispatch many page-level column-crop jobs while preserving strict per-page isola
 
 ## Output contract
 
-For each source image, child run may produce one or more column PNGs under `data/branch_a_preservation/column_views/` using `scripts/column_crop.py` naming pattern:
+For each source image, child run may produce one or more column PNGs under a dedicated page subdirectory inside `data/branch_a_preservation/column_views/` using `scripts/column_crop.py` naming pattern:
 
-- `<input_stem>--col-01.png`
-- `<input_stem>--col-02.png`
+- `data/branch_a_preservation/column_views/<input_stem>/<input_stem>--col-01.png`
+- `data/branch_a_preservation/column_views/<input_stem>/<input_stem>--col-02.png`
 - ...
 
 For each batch run, produce dedicated run directory under `data/branch_a_preservation/column_views/_batch_runs/` containing prompts, logs, traces, `status.tsv`, `summary.json`, and `summary.md`.
@@ -44,7 +44,8 @@ For each batch run, produce dedicated run directory under `data/branch_a_preserv
 - Keep each child run limited to one image.
 - Do not let child runs compare against or depend on other pages.
 - Do not overwrite existing output columns for a page by default.
-- Do not use network access.
+- The top-level batch invocation must be run with an unsandboxed environment that allows child `codex exec` session setup and outbound API access.
+- Child runs remain single-page and must not use network access for page analysis beyond the required `codex exec` session itself.
 
 ## Failure policy
 
@@ -52,6 +53,7 @@ For each batch run, produce dedicated run directory under `data/branch_a_preserv
 - Non-PNG source image path: failed item.
 - Duplicate source image path: failed item.
 - Existing output columns for target page stem: blocked item.
+- Child runtime bootstrap failure before page analysis: batch setup failure. Stop and rerun the top-level batch outside the sandbox.
 - Child non-zero exit, no output columns, or outputs outside expected page stem: failed item.
 - Batch setup failure before dispatch: stop and report blocking issue.
 

@@ -14,6 +14,8 @@ from typing import Final
 
 COLUMN_OUTPUT_DIR: Final[Path] = Path("data/branch_a_preservation/column_views")
 COLUMN_SUFFIX_TOKEN: Final[str] = "--col-"
+CHILD_ENV_CHECK_PROMPT: Final[str] = "Reply with exactly OK."
+CHILD_ENV_CHECK_TIMEOUT_SECONDS: Final[int] = 45
 CHILD_PROMPT_TEMPLATE: Final[str] = """Use skill `ancient-chinese-column-crop`.
 
 Process exactly one PNG page image in this run.
@@ -26,7 +28,7 @@ Required behavior:
 - process only this one image
 - do not compare against, inspect, or incorporate any other page
 - run `scripts/column_crop.py --dry-run` first
-- if crop plan is defensible, write final column PNGs only under `data/branch_a_preservation/column_views/`
+- if crop plan is defensible, write final column PNGs only under `data/branch_a_preservation/column_views/<page_stem>/`
 - do not overwrite existing output files
 - do not produce column files for any other page stem
 """
@@ -126,6 +128,7 @@ def main(argv: list[str] | None = None) -> int:
         entries = build_entries(manifest_lines=manifest_lines, manifest_path=args.manifest)
         ensure_dir(args.output_dir, "output dir")
         ensure_dir(args.batch_runs_dir, "batch runs dir")
+        verify_child_codex_environment()
         batch_run_paths = create_batch_run_paths(
             output_dir=args.output_dir,
             batch_runs_dir=args.batch_runs_dir,
@@ -370,15 +373,16 @@ def run_child(
     post_outputs = list_all_outputs(output_dir)
     new_outputs = sorted(post_outputs - preexisting_outputs)
     expected_prefix = f"{entry.page_stem}{COLUMN_SUFFIX_TOKEN}"
+    expected_dir = page_output_dir(output_dir, entry.page_stem)
     expected_outputs = [
         display_path(path)
         for path in new_outputs
-        if path.name.startswith(expected_prefix)
+        if path.parent == expected_dir and path.name.startswith(expected_prefix)
     ]
     unexpected_outputs = [
         display_path(path)
         for path in new_outputs
-        if not path.name.startswith(expected_prefix)
+        if path.parent != expected_dir or not path.name.startswith(expected_prefix)
     ]
     return ChildRunResult(
         exit_code=completed.returncode,
@@ -404,12 +408,52 @@ def build_codex_command(entry: ManifestEntry) -> list[str]:
     ]
 
 
+def verify_child_codex_environment() -> None:
+    workspace_root = Path.cwd().resolve(strict=False)
+    command = [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        str(workspace_root),
+        "--json",
+        "-",
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            input=CHILD_ENV_CHECK_PROMPT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=CHILD_ENV_CHECK_TIMEOUT_SECONDS,
+        )
+    except FileNotFoundError as exc:
+        raise BatchSetupError("codex executable not found in PATH") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise BatchSetupError(
+            "child codex exec preflight timed out; rerun the top-level batch outside the sandbox"
+        ) from exc
+
+    if completed.returncode == 0:
+        return
+
+    stderr = (completed.stderr or "").strip()
+    stderr_tail = "\n".join(stderr.splitlines()[-4:]) if stderr else "no stderr"
+    raise BatchSetupError(
+        "child codex exec preflight failed; rerun the top-level batch outside the sandbox. "
+        f"stderr tail: {stderr_tail}"
+    )
+
+
 def list_all_outputs(directory: Path) -> set[Path]:
     if not directory.exists():
         return set()
     return {
         path.resolve(strict=False)
-        for path in directory.glob(f"*{COLUMN_SUFFIX_TOKEN}*.png")
+        for path in directory.rglob(f"*{COLUMN_SUFFIX_TOKEN}*.png")
         if path.is_file()
     }
 
@@ -417,7 +461,14 @@ def list_all_outputs(directory: Path) -> set[Path]:
 def list_page_outputs(directory: Path, page_stem: str) -> list[Path]:
     if not directory.exists():
         return []
-    return sorted(directory.glob(f"{page_stem}{COLUMN_SUFFIX_TOKEN}*.png"))
+    page_dir = page_output_dir(directory, page_stem)
+    if not page_dir.exists():
+        return []
+    return sorted(page_dir.glob(f"{page_stem}{COLUMN_SUFFIX_TOKEN}*.png"))
+
+
+def page_output_dir(directory: Path, page_stem: str) -> Path:
+    return directory / page_stem
 
 
 def build_summary(
