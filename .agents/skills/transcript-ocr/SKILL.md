@@ -51,25 +51,12 @@ Produce a strict OCR transcription of the visible source text in a single scan i
    - do not modernize spelling, punctuation, spacing, or character variants
    - do not normalize to a standard printed edition
 5. Handle uncertainty explicitly:
-   - Keep inline uncertainty markup minimal and source-facing.
-   - Use `[illegible]` when no plausible reading can be defended from the image.
-   - Use `[字?]` when one likely reading is visible but low confidence.
-   - Use `[甲/乙?]` when two or more readings remain plausible and no ranking can be justified.
-   - Use `[甲>乙>丙?]` when multiple readings remain plausible and the evidence supports an ordinal confidence ranking.
-   - Use `[甲=乙>丙?]` when two readings are tied and both outrank a weaker alternative.
-   - Do not use bare `[?]` when a candidate reading can be stated.
-   - Do not use numeric probabilities or percentages.
-   - In `Uncertainty / Comments`, write `None` only when the line is fully clear.
-   - Otherwise, begin the cell with one or more fixed codes in ascending order:
-     - `U0` unreadable, no plausible reading
-     - `U1` one likely reading, low confidence
-     - `U2` multiple plausible readings
-     - `U3` structural damage obscures one component only
-     - `U4` bleed-through interference
-     - `U5` likely nonstandard or variant glyph
-     - `U6` segmentation or line-break uncertainty
-   - After the code sequence, add `: short note` only when it adds review value.
-   - See `references/uncertainty-notation-standard.md` for the detailed notation standard.
+   - Follow `references/uncertainty-notation-standard.md`.
+   - Keep uncertainty markup minimal and source-facing.
+   - Use only the approved inline forms and uncertainty codes defined in the standard.
+   - In `Uncertainty / Comments`, write `None` only when the line is fully clear. Otherwise, begin with one or more codes in ascending order; add `: short note` only when it materially helps later review.
+   - Do not invent unsupported readings, rankings, or probabilities.
+   - Do not use external sources to supply alternatives.
 6. Exclude non-textual material from the transcription itself.
    - Do not merge seals, stains, bleed-through, page numbers, handwritten notes, or marginal marks into the source text.
    - Note them in the comments column only when relevant to uncertainty or interference.
@@ -126,5 +113,4 @@ Stop and report the issue instead of fabricating output when:
 
 ## References
 
-- `references/ocr-transcription-source-prompt.md`
 - `references/uncertainty-notation-standard.md`
