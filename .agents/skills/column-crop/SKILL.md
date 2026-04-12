@@ -1,9 +1,9 @@
 ---
-name: ancient-chinese-column-crop
+name: column-crop
 description: Analyze a PNG scan of vertically set Ancient Chinese text, determine reading-column boundaries, and crop the page into individual column images using scripts/column_crop.py. Use when the task is to split one scanned page into ordered column images for downstream OCR or manual transcription. Do not use for full-text transcription, translation, multi-page collation, or non-PNG inputs.
 ---
 
-# Ancient Chinese Column Crop
+# Column Crop
 
 ## Purpose
 

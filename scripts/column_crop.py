@@ -16,6 +16,7 @@ DEFAULT_LEFT_PADDING = 20
 DEFAULT_RIGHT_PADDING = 20
 DEFAULT_TOP_PADDING = 0
 DEFAULT_BOTTOM_PADDING = 0
+DEFAULT_OUTPUT_DIR_TEXT = f"{DEFAULT_OUTPUT_DIR.as_posix()}/"
 
 
 @dataclass(frozen=True)
@@ -42,7 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         help=(
             "Directory for cropped columns. Default: "
-            "data/branch_a_preservation/column_views/"
+            f"{DEFAULT_OUTPUT_DIR_TEXT}"
         ),
     )
     parser.add_argument(

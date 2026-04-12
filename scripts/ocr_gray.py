@@ -9,7 +9,7 @@ from PIL import Image
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 DEFAULT_INPUT_DIR = Path("data/branch_a_preservation/NDL/page_views")
-DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray/NDL/")
+DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray/NDL/page_views")
 DEFAULT_PRESET = SCRIPT_DIR / "presets" / "ocr_gray" / "ocr_gray_baseline.json"
 DEFAULT_PARAMS = {
     "deskew_enabled": True,
@@ -280,12 +280,9 @@ def save_json(path: str | Path, payload: object) -> None:
 
 def save_output(infile: str | Path, outdir: str | Path, preset: dict[str, object]) -> dict[str, object]:
     infile = Path(infile)
-    outdir = Path(outdir)
-
-    image_dir = outdir / "fidelity_gray"
-    metadata_dir = outdir / "metadata"
+    image_dir = Path(outdir)
+    metadata_dir = image_dir / "metadata"
     image_dir.mkdir(parents=True, exist_ok=True)
-    metadata_dir.mkdir(parents=True, exist_ok=True)
 
     gray, meta = preprocess_gray(infile, preset)
     stem = infile.stem
@@ -325,7 +322,7 @@ def main() -> None:
         description="Generate grayscale OCR images for cropped Wumenguan scans using a JSON preset and save matching metadata sidecars."
     )
     parser.add_argument("inputs", nargs="*", default=[str(DEFAULT_INPUT_DIR)], help="Input image paths")
-    parser.add_argument("--outdir", default=str(DEFAULT_OUTPUT_DIR), help="Output directory")
+    parser.add_argument("--outdir", default=str(DEFAULT_OUTPUT_DIR), help="Output page_views directory")
     parser.add_argument("--preset", default=str(DEFAULT_PRESET), help="Path to a grayscale preset JSON file")
     args = parser.parse_args()
 

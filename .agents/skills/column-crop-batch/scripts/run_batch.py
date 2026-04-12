@@ -11,8 +11,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Final
 
+from scripts.column_crop import DEFAULT_OUTPUT_DIR
 
-COLUMN_OUTPUT_DIR: Final[Path] = Path("data/branch_a_preservation/column_views")
+COLUMN_OUTPUT_DIR: Final[Path] = DEFAULT_OUTPUT_DIR
 COLUMN_SUFFIX_TOKEN: Final[str] = "--col-"
 CHILD_ENV_CHECK_PROMPT: Final[str] = "Reply with exactly OK."
 CHILD_ENV_CHECK_TIMEOUT_SECONDS: Final[int] = 45
@@ -24,7 +25,7 @@ REQUIRED_COMPLETED_PROGRESS_STATUSES: Final[tuple[str, ...]] = (
     "writing_outputs",
     "completed",
 )
-CHILD_PROMPT_TEMPLATE: Final[str] = """Use skill `ancient-chinese-column-crop`.
+CHILD_PROMPT_TEMPLATE: Final[str] = """Use skill `column-crop`.
 
 Process exactly one PNG page image in this run.
 
@@ -38,7 +39,7 @@ Summary artifact:
 - <SUMMARY_FILE>
 
 Required behavior:
-- use skill `ancient-chinese-column-crop` for full workflow
+- use skill `column-crop` for full workflow
 - process only this one image
 - do not compare against, inspect, or incorporate any other page
 - append machine-readable progress events with `python scripts/child_status.py progress`
@@ -50,7 +51,7 @@ Required behavior:
   - `writing_outputs`
   - `completed`
 - run `scripts/column_crop.py --dry-run` first
-- if crop plan is defensible, write final column PNGs only under `data/branch_a_preservation/column_views/<page_stem>/`
+- if crop plan is defensible, write final column PNGs only under default output directory from `scripts/column_crop.py` (`DEFAULT_OUTPUT_DIR/<page_stem>/`)
 - do not overwrite existing output files
 - do not produce column files for any other page stem
 """
@@ -136,7 +137,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         default=COLUMN_OUTPUT_DIR,
         type=Path,
-        help="Directory where column output images are stored.",
+        help="Directory where column output images are stored. Default comes from scripts/column_crop.py DEFAULT_OUTPUT_DIR.",
     )
     parser.add_argument(
         "--batch-runs-dir",

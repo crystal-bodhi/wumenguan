@@ -1,9 +1,9 @@
 ---
-name: ancient-chinese-column-crop-batch
-description: Dispatch isolated Ancient Chinese column-crop runs through `ancient-chinese-column-crop`, one PNG page image per child run, using a manifest-driven workflow that writes per-page column crops under `data/branch_a_preservation/column_views/` plus per-run prompts, logs, traces, and summaries. Do not use for single-page crop work, direct multi-image cropping in current run, or any cross-page layout inference.
+name: column-crop-batch
+description: Dispatch isolated Ancient Chinese column-crop runs through `column-crop`, one PNG page image per child run, using a manifest-driven workflow that writes per-page column crops under default output directory defined by `scripts/column_crop.py` plus per-run prompts, logs, traces, and summaries. Do not use for single-page crop work, direct multi-image cropping in current run, or any cross-page layout inference.
 ---
 
-# Ancient Chinese Column Crop Batch
+# Column Crop Batch
 
 ## Purpose
 
@@ -14,7 +14,7 @@ Dispatch many page-level column-crop jobs while preserving strict per-page isola
 - You want to process many PNG page images in one top-level invocation.
 - You want one isolated child execution per page.
 - You want auditable batch artifacts for review.
-- You want outputs written under `data/branch_a_preservation/column_views/`.
+- You want outputs written under default output directory defined by `scripts/column_crop.py`.
 
 ## When not to use
 
@@ -30,17 +30,17 @@ Dispatch many page-level column-crop jobs while preserving strict per-page isola
 
 ## Output contract
 
-For each source image, child run may produce one or more column PNGs under a dedicated page subdirectory inside `data/branch_a_preservation/column_views/` using `scripts/column_crop.py` naming pattern:
+For each source image, child run may produce one or more column PNGs under a dedicated page subdirectory inside default output directory from `scripts/column_crop.py` using naming pattern:
 
-- `data/branch_a_preservation/column_views/<input_stem>/<input_stem>--col-01.png`
-- `data/branch_a_preservation/column_views/<input_stem>/<input_stem>--col-02.png`
+- `<DEFAULT_OUTPUT_DIR>/<input_stem>/<input_stem>--col-01.png`
+- `<DEFAULT_OUTPUT_DIR>/<input_stem>/<input_stem>--col-02.png`
 - ...
 
-For each batch run, produce dedicated run directory under `data/branch_a_preservation/column_views/_batch_runs/` containing prompts, logs, traces, `status.tsv`, `summary.json`, and `summary.md`.
+For each batch run, produce dedicated run directory under `<DEFAULT_OUTPUT_DIR>/_batch_runs/` containing prompts, logs, traces, progress artifacts, child summaries, `status.tsv`, `summary.json`, and `summary.md`.
 
 ## Rules
 
-- Use `ancient-chinese-column-crop` for every child run.
+- Use `column-crop` for every child run.
 - Keep each child run limited to one image.
 - Do not let child runs compare against or depend on other pages.
 - Do not overwrite existing output columns for a page by default.
