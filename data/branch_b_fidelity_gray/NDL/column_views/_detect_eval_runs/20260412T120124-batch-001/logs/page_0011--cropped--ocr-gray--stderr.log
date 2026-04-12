@@ -1,0 +1,106 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0011--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3094,
+  "padding": {
+    "left": 20,
+    "right": 20,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "columns": [
+    {
+      "left": 1865,
+      "right": 2139,
+      "core_left": 1876,
+      "core_right": 2128,
+      "peak_x": 2095,
+      "peak_value": 329583.14,
+      "confidence": 1.0,
+      "gutter_left": 1865,
+      "gutter_right": 2139
+    },
+    {
+      "left": 1613,
+      "right": 1865,
+      "core_left": 1633,
+      "core_right": 1854,
+      "peak_x": 1688,
+      "peak_value": 222204.9,
+      "confidence": 1.0,
+      "gutter_left": 1612,
+      "gutter_right": 1865
+    },
+    {
+      "left": 1392,
+      "right": 1612,
+      "core_left": 1398,
+      "core_right": 1592,
+      "peak_x": 1520,
+      "peak_value": 224556.19,
+      "confidence": 1.0,
+      "gutter_left": 1392,
+      "gutter_right": 1612
+    },
+    {
+      "left": 1139,
+      "right": 1392,
+      "core_left": 1157,
+      "core_right": 1387,
+      "peak_x": 1227,
+      "peak_value": 210320.14,
+      "confidence": 1.0,
+      "gutter_left": 1139,
+      "gutter_right": 1392
+    },
+    {
+      "left": 678,
+      "right": 1139,
+      "core_left": 690,
+      "core_right": 1122,
+      "peak_x": 1024,
+      "peak_value": 235505.95,
+      "confidence": 1.0,
+      "gutter_left": 678,
+      "gutter_right": 1139
+    },
+    {
+      "left": 203,
+      "right": 678,
+      "core_left": 223,
+      "core_right": 667,
+      "peak_x": 495,
+      "peak_value": 198565.43,
+      "confidence": 1.0,
+      "gutter_left": 203,
+      "gutter_right": 678
+    },
+    {
+      "left": 95,
+      "right": 203,
+      "core_left": 115,
+      "core_right": 183,
+      "peak_x": 141,
+      "peak_value": 577574.29,
+      "confidence": 0.85,
+      "gutter_left": 93,
+      "gutter_right": 203
+    },
+    {
+      "left": 0,
+      "right": 92,
+      "core_left": 13,
+      "core_right": 72,
+      "peak_x": 29,
+      "peak_value": 271440.67,
+      "confidence": 0.738,
+      "gutter_left": 0,
+      "gutter_right": 93
+    }
+  ],
+  "warnings": []
+}

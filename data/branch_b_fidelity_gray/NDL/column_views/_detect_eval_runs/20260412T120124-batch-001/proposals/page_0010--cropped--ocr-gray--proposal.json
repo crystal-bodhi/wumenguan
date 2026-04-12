@@ -1,0 +1,119 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0010--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3109,
+  "padding": {
+    "left": 20,
+    "right": 20,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "columns": [
+    {
+      "left": 1931,
+      "right": 2023,
+      "core_left": 1944,
+      "core_right": 2003,
+      "peak_x": 1980,
+      "peak_value": 552594.48,
+      "confidence": 0.738,
+      "gutter_left": 1931,
+      "gutter_right": 2084
+    },
+    {
+      "left": 1719,
+      "right": 1931,
+      "core_left": 1731,
+      "core_right": 1918,
+      "peak_x": 1809,
+      "peak_value": 202953.29,
+      "confidence": 1.0,
+      "gutter_left": 1719,
+      "gutter_right": 1931
+    },
+    {
+      "left": 1511,
+      "right": 1719,
+      "core_left": 1523,
+      "core_right": 1707,
+      "peak_x": 1568,
+      "peak_value": 225051.52,
+      "confidence": 1.0,
+      "gutter_left": 1511,
+      "gutter_right": 1719
+    },
+    {
+      "left": 1021,
+      "right": 1511,
+      "core_left": 1038,
+      "core_right": 1500,
+      "peak_x": 1365,
+      "peak_value": 261558.81,
+      "confidence": 1.0,
+      "gutter_left": 1021,
+      "gutter_right": 1511
+    },
+    {
+      "left": 778,
+      "right": 1021,
+      "core_left": 790,
+      "core_right": 1005,
+      "peak_x": 944,
+      "peak_value": 229781.95,
+      "confidence": 1.0,
+      "gutter_left": 778,
+      "gutter_right": 1021
+    },
+    {
+      "left": 536,
+      "right": 778,
+      "core_left": 556,
+      "core_right": 766,
+      "peak_x": 678,
+      "peak_value": 232533.48,
+      "confidence": 1.0,
+      "gutter_left": 528,
+      "gutter_right": 778
+    },
+    {
+      "left": 324,
+      "right": 520,
+      "core_left": 334,
+      "core_right": 500,
+      "peak_x": 426,
+      "peak_value": 271359.52,
+      "confidence": 1.0,
+      "gutter_left": 324,
+      "gutter_right": 528
+    },
+    {
+      "left": 76,
+      "right": 324,
+      "core_left": 87,
+      "core_right": 314,
+      "peak_x": 193,
+      "peak_value": 229307.33,
+      "confidence": 1.0,
+      "gutter_left": 76,
+      "gutter_right": 324
+    },
+    {
+      "left": 0,
+      "right": 76,
+      "core_left": 11,
+      "core_right": 65,
+      "peak_x": 40,
+      "peak_value": 373096.38,
+      "confidence": 0.675,
+      "gutter_left": 0,
+      "gutter_right": 76
+    }
+  ],
+  "warnings": [
+    "At least one proposed column is much wider than peers; detector may be merging columns"
+  ]
+}

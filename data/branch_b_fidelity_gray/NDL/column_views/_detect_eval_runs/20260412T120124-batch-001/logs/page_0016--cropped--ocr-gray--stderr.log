@@ -1,0 +1,84 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0016--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3109,
+  "padding": {
+    "left": 20,
+    "right": 20,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "columns": [
+    {
+      "left": 1999,
+      "right": 2084,
+      "core_left": 2018,
+      "core_right": 2072,
+      "peak_x": 2057,
+      "peak_value": 283091.05,
+      "confidence": 0.675,
+      "gutter_left": 1999,
+      "gutter_right": 2084
+    },
+    {
+      "left": 1908,
+      "right": 1999,
+      "core_left": 1920,
+      "core_right": 1980,
+      "peak_x": 1960,
+      "peak_value": 581130.67,
+      "confidence": 0.75,
+      "gutter_left": 1908,
+      "gutter_right": 1999
+    },
+    {
+      "left": 1202,
+      "right": 1908,
+      "core_left": 1213,
+      "core_right": 1897,
+      "peak_x": 1550,
+      "peak_value": 246932.9,
+      "confidence": 1.0,
+      "gutter_left": 1202,
+      "gutter_right": 1908
+    },
+    {
+      "left": 731,
+      "right": 1202,
+      "core_left": 739,
+      "core_right": 1192,
+      "peak_x": 1062,
+      "peak_value": 281045.48,
+      "confidence": 1.0,
+      "gutter_left": 731,
+      "gutter_right": 1202
+    },
+    {
+      "left": 295,
+      "right": 731,
+      "core_left": 304,
+      "core_right": 723,
+      "peak_x": 593,
+      "peak_value": 267881.24,
+      "confidence": 1.0,
+      "gutter_left": 295,
+      "gutter_right": 731
+    },
+    {
+      "left": 0,
+      "right": 295,
+      "core_left": 10,
+      "core_right": 287,
+      "peak_x": 29,
+      "peak_value": 436059.86,
+      "confidence": 1.0,
+      "gutter_left": 0,
+      "gutter_right": 295
+    }
+  ],
+  "warnings": []
+}

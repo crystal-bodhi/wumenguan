@@ -1,0 +1,64 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0019--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3062,
+  "padding": {
+    "left": 20,
+    "right": 20,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "columns": [
+    {
+      "left": 634,
+      "right": 2107,
+      "core_left": 654,
+      "core_right": 2100,
+      "peak_x": 2084,
+      "peak_value": 337079.9,
+      "confidence": 1.0,
+      "gutter_left": 624,
+      "gutter_right": 2107
+    },
+    {
+      "left": 382,
+      "right": 614,
+      "core_left": 402,
+      "core_right": 594,
+      "peak_x": 470,
+      "peak_value": 259452.76,
+      "confidence": 1.0,
+      "gutter_left": 374,
+      "gutter_right": 624
+    },
+    {
+      "left": 163,
+      "right": 366,
+      "core_left": 183,
+      "core_right": 346,
+      "peak_x": 248,
+      "peak_value": 231130.05,
+      "confidence": 1.0,
+      "gutter_left": 158,
+      "gutter_right": 374
+    },
+    {
+      "left": 44,
+      "right": 154,
+      "core_left": 64,
+      "core_right": 134,
+      "peak_x": 88,
+      "peak_value": 577688.52,
+      "confidence": 0.875,
+      "gutter_left": 0,
+      "gutter_right": 158
+    }
+  ],
+  "warnings": [
+    "At least one proposed column is much wider than peers; detector may be merging columns"
+  ]
+}

@@ -34,6 +34,17 @@ python scripts/ocr_gray.py
 
 ## Column Crop
 
+`scripts/column_detect.py` proposes explicit column geometry for one PNG page image.
+
+- Input: one `.png` page image
+- Output: JSON proposal, optional overlay preview
+- Goal: propose crops suitable for later OCR/transcription
+- Output fields:
+  - `top`, `bottom`, `order`
+  - padding
+  - explicit column bounds
+  - warnings
+
 `scripts/column_crop.py` crops one PNG page image into separate column images.
 
 - Input: one `.png` page image
@@ -41,7 +52,11 @@ python scripts/ocr_gray.py
 - Default output dir: `data/branch_a_preservation/column_views/`
 - Default reading order: `rtl`
 - Default vertical bounds: full image height
+- Default padding:
+  - left/right: `20`
+  - top/bottom: `0`
 - Modes:
+  - Proposal JSON: `--proposal path/to/proposal.json`
   - Explicit bounds: repeat `--column LEFT:RIGHT`
   - Template: `--left`, `--right`, `--count`, optional `--gap`
 - JSON:
@@ -51,6 +66,23 @@ python scripts/ocr_gray.py
 Examples:
 
 ```bash
+# Detector-first proposal
+python scripts/column_detect.py \
+  data/branch_a_preservation/page_views/page_0006--cropped.png \
+  --output-json /tmp/page_0006-proposal.json \
+  --overlay /tmp/page_0006-overlay.png
+
+# Proposal dry run
+python scripts/column_crop.py \
+  data/branch_a_preservation/page_views/page_0006--cropped.png \
+  --proposal /tmp/page_0006-proposal.json \
+  --dry-run
+
+# Final crop from proposal
+python scripts/column_crop.py \
+  data/branch_a_preservation/page_views/page_0006--cropped.png \
+  --proposal /tmp/page_0006-proposal.json
+
 # Explicit column bounds
 python scripts/column_crop.py \
   data/branch_a_preservation/page_views_CNTS--manual-crop/page_0005--cropped.png \
@@ -65,6 +97,8 @@ python scripts/column_crop.py \
   --right 1940 \
   --count 20 \
   --gap 8 \
+  --pad-left 24 \
+  --pad-right 24 \
   --top 120 \
   --bottom 2960
 

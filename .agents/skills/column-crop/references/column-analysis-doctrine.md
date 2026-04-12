@@ -2,107 +2,83 @@
 
 ## Contract
 
-This doctrine governs model-side planning for one PNG page image passed to `scripts/column_crop.py`.
+This doctrine governs review of one PNG page image for column cropping.
 
-The script only executes a crop plan. It accepts:
+Detector-first:
 
-- explicit `--column LEFT:RIGHT` bounds
-- template mode via `--left`, `--right`, `--count`, optional `--gap`
-- optional `--top`, `--bottom`, `--order`
-- `--dry-run` for plan validation
+1. `scripts/column_detect.py` proposes geometry.
+2. Model reviews proposal for downstream OCR suitability.
+3. `scripts/column_crop.py --proposal ... --dry-run` validates resolved crop plan.
+4. Final crop runs only if plan remains defensible.
 
-It does not infer column structure, text region, crop mode, or whether the page should be cropped at all.
+Do not treat model as primary pixel-boundary author.
 
-## Required Flow
+## Goal
 
-1. Confirm the input is one PNG page image.
-2. Decide whether the page is defensibly columnar. If not, stop and report blocker.
-3. Determine vertical bounds.
-4. Determine reading order. Default `rtl`.
-5. Determine column count and boundary confidence.
-6. Choose crop mode: template or explicit.
-7. Build the crop plan.
-8. Run `--dry-run` and inspect the resolved plan.
-9. Execute final crops only if the plan remains defensible.
+Produce one image per reading column suitable for later OCR/transcription.
 
-## Columnar Gate
+That means:
 
-Treat the page as columnar only when all are defensible:
+- do not bisect characters
+- do not merge neighboring columns
+- preserve reading order
+- prefer extra gutter/background over aggressive tightness
 
-- text runs are vertically oriented
-- text is arranged in repeated vertical bands
-- inter-column whitespace is stable enough to defend boundaries
-- reading order can be stated clearly
+## Review Questions
 
-Stop if straight vertical slicing is made speculative by factors such as:
+For each proposal ask:
 
-- severe curvature, warping, or skew
-- marginal notes merging into main text
-- illustrations, seals, or major damage inside the text area
-- a fragment too partial to defend count and spacing
+- does each crop correspond to one real text band?
+- do left/right bounds fall in low-ink gutter zones?
+- do outermost columns include full character width?
+- do vertical bounds preserve full text-bearing height?
+- are any crops suspiciously narrow or wide versus neighbors?
 
-## Bounds
+## Accept
 
-Default to preserving the full text-bearing height.
+Accept proposal when all are defensible:
 
-Use `--top` and `--bottom` only when clear evidence shows that trimming removes non-text content that would pollute every crop, such as:
+- page is columnar
+- each proposed column maps to one visible text band
+- boundaries sit outside main ink mass
+- padding is sufficient for later OCR readability
+- dry-run plan matches intended order and output set
 
-- broad blank borders
-- headers or footers clearly outside the main text block
-- full-width scan artifacts or damage bands
+## Adjust
 
-Do not trim for aesthetics.
+Adjust proposal when:
 
-## Count and Mode
+- detector is directionally right but one or two boundaries need widening/nudging
+- outer margins need more room
+- top/bottom should include more text-bearing height
 
-A defended count requires:
+Prefer editing proposal JSON over inventing brand-new command arguments.
 
-- one intended crop per readable vertical text band
-- outermost columns accounted for
-- no crop that clearly merges two columns
-- no crop that clearly splits one column
+## Reject / Block
 
-Count is weak when:
+Reject or block when:
 
-- boundary confidence changes sharply across the page
-- an outer margin may hide another column
-- a band is ambiguous between one wide column and two narrow ones
-- the count works only after aggressive trimming
+- page may not be columnar
+- multiple plausible counts remain
+- bleed-through, skew, marginalia, or damage makes bounds speculative
+- detector proposal cuts through dense ink and no small adjustment fixes it
+- dry run is internally valid but visually wrong
 
-Use template mode only when equal-width slicing is defensible across the full text region:
+## Padding Principle
 
-- columns are plausibly equal-width
-- gutters are reasonably regular
-- one bounded region contains the whole column set
-- no local damage forces materially different column widths
-- `left`, `right`, and `count` can be set without likely cutting characters
+Padding is safeguard, not rescue.
 
-Otherwise use explicit mode.
-
-When in doubt, choose explicit mode.
-
-## Reject Gate
-
-Do not execute final crops if any of these remain true:
-
-- the page may not be truly columnar
-- the chosen mode is not justified by visible structure
-- the count is speculative
-- a boundary likely bisects characters
-- a crop likely merges adjacent columns
-- `top` or `bottom` likely removes text-bearing content
-- the `--dry-run` plan does not match the intended order or column mapping
-
-Do not guess silently. Stop and report the blocker.
+- Padding should widen good bounds slightly.
+- Padding should not be expected to repair a bad core boundary.
+- If boundary core is wrong, fix proposal first.
 
 ## Report
 
 Report:
 
-- whether the page was treated as columnar
-- mode used: explicit or template
+- proposal accepted / adjusted / rejected
+- why geometry is or is not suitable for later OCR
 - `top`, `bottom`, `order`
-- count
-- explicit bounds or template fields used
-- output directory
-- residual uncertainty, if any
+- padding used
+- final bounds
+- residual uncertainty

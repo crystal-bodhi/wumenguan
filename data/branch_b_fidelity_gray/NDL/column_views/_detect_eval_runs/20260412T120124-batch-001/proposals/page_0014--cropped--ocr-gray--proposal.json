@@ -1,0 +1,53 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0014--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3078,
+  "padding": {
+    "left": 20,
+    "right": 20,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "columns": [
+    {
+      "left": 2016,
+      "right": 2084,
+      "core_left": 2032,
+      "core_right": 2072,
+      "peak_x": 2057,
+      "peak_value": 259006.1,
+      "confidence": 0.5,
+      "gutter_left": 2016,
+      "gutter_right": 2084
+    },
+    {
+      "left": 1912,
+      "right": 2016,
+      "core_left": 1927,
+      "core_right": 2000,
+      "peak_x": 1976,
+      "peak_value": 538274.19,
+      "confidence": 0.912,
+      "gutter_left": 1912,
+      "gutter_right": 2016
+    },
+    {
+      "left": 0,
+      "right": 1912,
+      "core_left": 11,
+      "core_right": 1897,
+      "peak_x": 36,
+      "peak_value": 336449.62,
+      "confidence": 1.0,
+      "gutter_left": 0,
+      "gutter_right": 1912
+    }
+  ],
+  "warnings": [
+    "At least one proposed column is much wider than peers; detector may be merging columns"
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "run_id": "20260412T120124-batch-001",
+  "manifest": "/home/nathaniel/code/work/wumenguan/data/batches/crop/batch-001.txt",
+  "status": "completed",
+  "requested": 10,
+  "completed": 10,
+  "failed": 0,
+  "total_warnings": 6,
+  "run_dir": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001",
+  "proposals_dir": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals",
+  "overlays_dir": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays",
+  "logs_dir": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs",
+  "status_tsv": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/status.tsv",
+  "summary_json": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/summary.json",
+  "summary_md": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/summary.md",
+  "items": [
+    {
+      "index": 0,
+      "page_stem": "page_0010--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0010--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0010--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0010--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0010--cropped--ocr-gray--stderr.log",
+      "warning_count": 1,
+      "warnings": [
+        "At least one proposed column is much wider than peers; detector may be merging columns"
+      ],
+      "column_count": 9,
+      "min_width": 76,
+      "median_width": 212,
+      "max_width": 490
+    },
+    {
+      "index": 1,
+      "page_stem": "page_0011--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0011--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0011--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0011--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0011--cropped--ocr-gray--stderr.log",
+      "warning_count": 0,
+      "warnings": [],
+      "column_count": 8,
+      "min_width": 92,
+      "median_width": 253,
+      "max_width": 475
+    },
+    {
+      "index": 2,
+      "page_stem": "page_0012--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0012--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0012--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0012--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0012--cropped--ocr-gray--stderr.log",
+      "warning_count": 1,
+      "warnings": [
+        "At least one proposed column is much wider than peers; detector may be merging columns"
+      ],
+      "column_count": 3,
+      "min_width": 73,
+      "median_width": 91,
+      "max_width": 1919
+    },
+    {
+      "index": 3,
+      "page_stem": "page_0013--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0013--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0013--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0013--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0013--cropped--ocr-gray--stderr.log",
+      "warning_count": 1,
+      "warnings": [
+        "At least one proposed column is much wider than peers; detector may be merging columns"
+      ],
+      "column_count": 4,
+      "min_width": 82,
+      "median_width": 98,
+      "max_width": 1856
+    },
+    {
+      "index": 4,
+      "page_stem": "page_0014--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0014--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0014--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0014--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0014--cropped--ocr-gray--stderr.log",
+      "warning_count": 1,
+      "warnings": [
+        "At least one proposed column is much wider than peers; detector may be merging columns"
+      ],
+      "column_count": 3,
+      "min_width": 68,
+      "median_width": 104,
+      "max_width": 1912
+    },
+    {
+      "index": 5,
+      "page_stem": "page_0015--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0015--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0015--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0015--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0015--cropped--ocr-gray--stderr.log",
+      "warning_count": 1,
+      "warnings": [
+        "At least one proposed column is much wider than peers; detector may be merging columns"
+      ],
+      "column_count": 4,
+      "min_width": 76,
+      "median_width": 106,
+      "max_width": 1867
+    },
+    {
+      "index": 6,
+      "page_stem": "page_0016--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0016--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0016--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0016--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0016--cropped--ocr-gray--stderr.log",
+      "warning_count": 0,
+      "warnings": [],
+      "column_count": 6,
+      "min_width": 85,
+      "median_width": 436,
+      "max_width": 706
+    },
+    {
+      "index": 7,
+      "page_stem": "page_0017--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0017--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0017--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0017--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0017--cropped--ocr-gray--stderr.log",
+      "warning_count": 0,
+      "warnings": [],
+      "column_count": 11,
+      "min_width": 60,
+      "median_width": 214,
+      "max_width": 278
+    },
+    {
+      "index": 8,
+      "page_stem": "page_0018--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0018--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0018--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0018--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0018--cropped--ocr-gray--stderr.log",
+      "warning_count": 0,
+      "warnings": [],
+      "column_count": 9,
+      "min_width": 95,
+      "median_width": 229,
+      "max_width": 287
+    },
+    {
+      "index": 9,
+      "page_stem": "page_0019--cropped--ocr-gray",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0019--cropped--ocr-gray.png",
+      "status": "completed",
+      "reason": null,
+      "proposal_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/proposals/page_0019--cropped--ocr-gray--proposal.json",
+      "overlay_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/overlays/page_0019--cropped--ocr-gray--overlay.png",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/_detect_eval_runs/20260412T120124-batch-001/logs/page_0019--cropped--ocr-gray--stderr.log",
+      "warning_count": 1,
+      "warnings": [
+        "At least one proposed column is much wider than peers; detector may be merging columns"
+      ],
+      "column_count": 4,
+      "min_width": 110,
+      "median_width": 232,
+      "max_width": 1473
+    }
+  ]
+}

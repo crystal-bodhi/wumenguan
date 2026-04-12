@@ -84,6 +84,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Uniform inter-column gap in pixels for template mode. Default: 0",
     )
     parser.add_argument(
+        "--proposal",
+        help="Path to JSON proposal from scripts/column_detect.py",
+    )
+    parser.add_argument(
         "--config",
         help=(
             "Path to JSON config. Fields: output_dir, order, top, bottom, columns, "
@@ -101,6 +105,10 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print resolved crop plan without writing output images",
     )
+    parser.add_argument("--pad-left", type=int, default=None, help="Left padding in pixels")
+    parser.add_argument("--pad-right", type=int, default=None, help="Right padding in pixels")
+    parser.add_argument("--pad-top", type=int, default=None, help="Top padding in pixels")
+    parser.add_argument("--pad-bottom", type=int, default=None, help="Bottom padding in pixels")
     return parser
 
 
@@ -173,6 +181,7 @@ def merge_args(args: argparse.Namespace, config: dict) -> dict:
 
     merged = {
         "input_image": args.input_image,
+        "proposal": args.proposal or config.get("proposal"),
         "output_dir": args.output_dir or config.get("output_dir"),
         "order": args.order or config.get("order") or DEFAULT_ORDER,
         "top": args.top if args.top is not None else config.get("top"),
@@ -183,6 +192,12 @@ def merge_args(args: argparse.Namespace, config: dict) -> dict:
             "right": args.right if args.right is not None else template.get("right"),
             "count": args.count if args.count is not None else template.get("count"),
             "gap": args.gap if args.gap is not None else template.get("gap", DEFAULT_GAP),
+        },
+        "padding": {
+            "left": args.pad_left if args.pad_left is not None else config.get("pad_left", DEFAULT_LEFT_PADDING),
+            "right": args.pad_right if args.pad_right is not None else config.get("pad_right", DEFAULT_RIGHT_PADDING),
+            "top": args.pad_top if args.pad_top is not None else config.get("pad_top", DEFAULT_TOP_PADDING),
+            "bottom": args.pad_bottom if args.pad_bottom is not None else config.get("pad_bottom", DEFAULT_BOTTOM_PADDING),
         },
         "dry_run": args.dry_run,
     }
@@ -301,6 +316,29 @@ def normalize_columns(
     ]
 
 
+def load_proposal(path: str | None) -> dict:
+    if not path:
+        return {}
+    payload = json.loads(Path(path).expanduser().read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("--proposal must contain JSON object")
+    return payload
+
+
+def columns_from_proposal(payload: dict[str, object]) -> list[tuple[int, int]]:
+    raw_columns = payload.get("columns", [])
+    if not isinstance(raw_columns, list):
+        raise ValueError("proposal `columns` must be list")
+    parsed: list[tuple[int, int]] = []
+    for index, entry in enumerate(raw_columns, start=1):
+        if not isinstance(entry, dict):
+            raise ValueError(f"proposal column {index} must be object")
+        if "left" not in entry or "right" not in entry:
+            raise ValueError(f"proposal column {index} missing left/right")
+        parsed.append((int(entry["left"]), int(entry["right"])))
+    return parsed
+
+
 def derive_output_dir(input_image: Path, output_dir: str | None) -> Path:
     if output_dir:
         return Path(output_dir).expanduser()
@@ -324,11 +362,14 @@ def print_plan(
     columns: list[ColumnSlice],
     image_width: int,
     image_height: int,
+    padding: dict[str, int],
 ) -> None:
     padded_top, padded_bottom = apply_vertical_padding(
         top=top,
         bottom=bottom,
         image_height=image_height,
+        top_padding=padding["top"],
+        bottom_padding=padding["bottom"],
     )
     page_dir = page_output_dir(output_dir, input_image)
     plan = {
@@ -340,10 +381,10 @@ def print_plan(
         "padded_top": padded_top,
         "padded_bottom": padded_bottom,
         "padding": {
-            "left": DEFAULT_LEFT_PADDING,
-            "right": DEFAULT_RIGHT_PADDING,
-            "top": DEFAULT_TOP_PADDING,
-            "bottom": DEFAULT_BOTTOM_PADDING,
+            "left": padding["left"],
+            "right": padding["right"],
+            "top": padding["top"],
+            "bottom": padding["bottom"],
         },
         "columns": [
             {
@@ -354,11 +395,15 @@ def print_plan(
                     left=column.left,
                     right=column.right,
                     image_width=image_width,
+                    left_padding=padding["left"],
+                    right_padding=padding["right"],
                 )[0],
                 "padded_right": apply_horizontal_padding(
                     left=column.left,
                     right=column.right,
                     image_width=image_width,
+                    left_padding=padding["left"],
+                    right_padding=padding["right"],
                 )[1],
                 "width": column.width,
                 "output_path": output_path_for_column(output_dir, input_image, column.index).as_posix(),
@@ -375,6 +420,7 @@ def crop_columns(
     top: int,
     bottom: int,
     columns: list[ColumnSlice],
+    padding: dict[str, int],
 ) -> int:
     page_dir = page_output_dir(output_dir, input_image)
     page_dir.mkdir(parents=True, exist_ok=True)
@@ -386,12 +432,16 @@ def crop_columns(
             top=top,
             bottom=bottom,
             image_height=image_height,
+            top_padding=padding["top"],
+            bottom_padding=padding["bottom"],
         )
         for column in columns:
             padded_left, padded_right = apply_horizontal_padding(
                 left=column.left,
                 right=column.right,
                 image_width=image_width,
+                left_padding=padding["left"],
+                right_padding=padding["right"],
             )
             crop = image.crop((padded_left, padded_top, padded_right, padded_bottom))
             output_path = output_path_for_column(output_dir, input_image, column.index)
@@ -404,17 +454,29 @@ def crop_columns(
     return saved
 
 
-def apply_horizontal_padding(left: int, right: int, image_width: int) -> tuple[int, int]:
-    padded_left = max(0, left - DEFAULT_LEFT_PADDING)
-    padded_right = min(image_width, right + DEFAULT_RIGHT_PADDING)
+def apply_horizontal_padding(
+    left: int,
+    right: int,
+    image_width: int,
+    left_padding: int,
+    right_padding: int,
+) -> tuple[int, int]:
+    padded_left = max(0, left - left_padding)
+    padded_right = min(image_width, right + right_padding)
     if padded_left >= padded_right:
         return left, right
     return padded_left, padded_right
 
 
-def apply_vertical_padding(top: int, bottom: int, image_height: int) -> tuple[int, int]:
-    padded_top = max(0, top - DEFAULT_TOP_PADDING)
-    padded_bottom = min(image_height, bottom + DEFAULT_BOTTOM_PADDING)
+def apply_vertical_padding(
+    top: int,
+    bottom: int,
+    image_height: int,
+    top_padding: int,
+    bottom_padding: int,
+) -> tuple[int, int]:
+    padded_top = max(0, top - top_padding)
+    padded_bottom = min(image_height, bottom + bottom_padding)
     if padded_top >= padded_bottom:
         return top, bottom
     return padded_top, padded_bottom
@@ -436,9 +498,21 @@ def main() -> int:
     try:
         config = load_json_config(args.config, args.config_json)
         merged = merge_args(args, config)
+        proposal = load_proposal(merged["proposal"])
 
         input_image = Path(merged["input_image"]).expanduser()
         validate_input_image(input_image)
+
+        if proposal:
+            merged["order"] = proposal.get("order", merged["order"])
+            merged["top"] = proposal.get("top", merged["top"])
+            merged["bottom"] = proposal.get("bottom", merged["bottom"])
+            merged["columns"] = proposal.get("columns", merged["columns"])
+            proposal_padding = proposal.get("padding", {})
+            if isinstance(proposal_padding, dict):
+                for side in ("left", "right", "top", "bottom"):
+                    if side in proposal_padding and getattr(args, f"pad_{side}") is None:
+                        merged["padding"][side] = int(proposal_padding[side])
 
         order = validate_order(str(merged["order"]))
         output_dir = derive_output_dir(input_image, merged["output_dir"])
@@ -448,6 +522,8 @@ def main() -> int:
 
         top, bottom = resolve_vertical_bounds(merged["top"], merged["bottom"], height)
         explicit_columns = parse_columns(merged["columns"])
+        if proposal:
+            explicit_columns = columns_from_proposal({"columns": merged["columns"]})
         template_columns = build_columns_from_template(
             width=width,
             left=merged["template"]["left"],
@@ -461,6 +537,12 @@ def main() -> int:
 
         raw_columns = explicit_columns or template_columns
         columns = normalize_columns(raw_columns=raw_columns, width=width, order=order)
+        padding = {
+            "left": int(merged["padding"]["left"]),
+            "right": int(merged["padding"]["right"]),
+            "top": int(merged["padding"]["top"]),
+            "bottom": int(merged["padding"]["bottom"]),
+        }
 
         if merged["dry_run"]:
             print_plan(
@@ -472,6 +554,7 @@ def main() -> int:
                 columns=columns,
                 image_width=width,
                 image_height=height,
+                padding=padding,
             )
             return 0
 
@@ -481,6 +564,7 @@ def main() -> int:
             top=top,
             bottom=bottom,
             columns=columns,
+            padding=padding,
         )
         print(f"Saved {count} column image(s) to {page_output_dir(output_dir, input_image).as_posix()}")
         return 0
