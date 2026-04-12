@@ -1,0 +1,118 @@
+{
+  "template_name": "column-layout-right",
+  "template_version": 3,
+  "parity": "odd",
+  "template_width": 2139,
+  "template_height": 3094,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3094,
+  "pad_left": 8,
+  "pad_right": 8,
+  "pad_top": 0,
+  "pad_bottom": 0,
+  "expected_columns": 8,
+  "expected_width": 246,
+  "width_tolerance": 32,
+  "centerlines": [
+    1875,
+    1657,
+    1408,
+    1164,
+    920,
+    673,
+    429,
+    183
+  ],
+  "drift_range": {
+    "default_x": 24,
+    "outer_columns_x": 34,
+    "y": 0
+  },
+  "tilt_model": {
+    "mode": "none",
+    "slope_px_per_1000y": 0,
+    "max_abs_slope_px_per_1000y": 10
+  },
+  "boundary_refinement": {
+    "mode": "snap_to_local_minimum",
+    "internal_search_radius_px": 45,
+    "outer_search_radius_px": 24,
+    "min_gutter_width_px": 18,
+    "score_region_top": 120,
+    "score_region_bottom": 2974,
+    "prefer_extra_gutter_over_tight_crop": true
+  },
+  "inner_frame_hint": {
+    "left": 42,
+    "right": 2004,
+    "top": 22,
+    "bottom": 2992
+  },
+  "columns": [
+    {
+      "index": 1,
+      "left": 1781,
+      "right": 1970,
+      "center": 1875,
+      "width": 189
+    },
+    {
+      "index": 2,
+      "left": 1533,
+      "right": 1781,
+      "center": 1657,
+      "width": 248
+    },
+    {
+      "index": 3,
+      "left": 1283,
+      "right": 1533,
+      "center": 1408,
+      "width": 250
+    },
+    {
+      "index": 4,
+      "left": 1046,
+      "right": 1283,
+      "center": 1164,
+      "width": 237
+    },
+    {
+      "index": 5,
+      "left": 795,
+      "right": 1046,
+      "center": 920,
+      "width": 251
+    },
+    {
+      "index": 6,
+      "left": 552,
+      "right": 795,
+      "center": 673,
+      "width": 243
+    },
+    {
+      "index": 7,
+      "left": 306,
+      "right": 552,
+      "center": 429,
+      "width": 246
+    },
+    {
+      "index": 8,
+      "left": 60,
+      "right": 306,
+      "center": 183,
+      "width": 246
+    }
+  ],
+  "notes": [
+    "Version 3 corrects the OCR failure in version 2. The prior odd-page fit placed several split lines on live strokes. This revision moves the hard template onto safer gutters and explicitly adds boundary refinement rules.",
+    "The right-page text block is left-shifted relative to the previous fit. Hard split lines now land at approximately x = 306, 552, 795, 1046, 1283, 1533, 1781 after normalizing to 2139 px width.",
+    "The left outer bound is intentionally pulled inward to x = 60 to suppress the gutter frame line while preserving the first reading column. The right outer bound remains conservative at x = 1970 to avoid the fore-edge strip.",
+    "For OCR use, the internal split lines should be treated as anchors, not immutable cuts. Snap each split to the nearest local vertical-ink minimum within the configured search radius whenever a page-specific fit is available.",
+    "Full-height vertical trimming remains disabled in the hard template. The top and bottom frame line positions still drift too much across the sample for a tighter global crop.",
+    "No nonzero tilt model is justified by this sample."
+  ]
+}

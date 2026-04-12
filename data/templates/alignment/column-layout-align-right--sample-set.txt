@@ -1,0 +1,17 @@
+page_013--cropped--ocr-gray.png
+page_019--cropped--ocr-gray.png
+page_025--cropped--ocr-gray.png
+page_027--cropped--ocr-gray.png
+page_031--cropped--ocr-gray.png
+page_037--cropped--ocr-gray.png
+page_043--cropped--ocr-gray.png
+page_049--cropped--ocr-gray.png
+page_055--cropped--ocr-gray.png
+page_061--cropped--ocr-gray.png
+page_067--cropped--ocr-gray.png
+page_073--cropped--ocr-gray.png
+page_079--cropped--ocr-gray.png
+page_085--cropped--ocr-gray.png
+page_091--cropped--ocr-gray.png
+page_097--cropped--ocr-gray.png
+page_103--cropped--ocr-gray.png

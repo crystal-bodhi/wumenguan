@@ -34,6 +34,13 @@ python scripts/ocr_gray.py
 
 ## Column Crop
 
+`scripts/column_fit_template.py` proposes explicit column geometry for one PNG page image using parity-specific left/right page templates.
+
+- Input: one `.png` page image
+- Output: JSON proposal, optional overlay preview
+- Goal: fit stable 8-column template family with small page-specific shift
+- Primary use: standard crop workflow
+
 `scripts/column_detect.py` proposes explicit column geometry for one PNG page image.
 
 - Input: one `.png` page image
@@ -66,8 +73,8 @@ python scripts/ocr_gray.py
 Examples:
 
 ```bash
-# Detector-first proposal
-python scripts/column_detect.py \
+# Template-first proposal
+python scripts/column_fit_template.py \
   data/branch_a_preservation/page_views/page_0006--cropped.png \
   --output-json /tmp/page_0006-proposal.json \
   --overlay /tmp/page_0006-overlay.png
@@ -82,6 +89,12 @@ python scripts/column_crop.py \
 python scripts/column_crop.py \
   data/branch_a_preservation/page_views/page_0006--cropped.png \
   --proposal /tmp/page_0006-proposal.json
+
+# Fallback detector proposal
+python scripts/column_detect.py \
+  data/branch_a_preservation/page_views/page_0006--cropped.png \
+  --output-json /tmp/page_0006-detect-proposal.json \
+  --overlay /tmp/page_0006-detect-overlay.png
 
 # Explicit column bounds
 python scripts/column_crop.py \

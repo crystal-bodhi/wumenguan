@@ -4,12 +4,13 @@
 
 This doctrine governs review of one PNG page image for column cropping.
 
-Detector-first:
+Template-first:
 
-1. `scripts/column_detect.py` proposes geometry.
+1. `scripts/column_fit_template.py` proposes geometry from left/right page template.
 2. Model reviews proposal for downstream OCR suitability.
-3. `scripts/column_crop.py --proposal ... --dry-run` validates resolved crop plan.
-4. Final crop runs only if plan remains defensible.
+3. If template fit is clearly wrong, `scripts/column_detect.py` may provide fallback comparison proposal.
+4. `scripts/column_crop.py --proposal ... --dry-run` validates resolved crop plan.
+5. Final crop runs only if plan remains defensible.
 
 Do not treat model as primary pixel-boundary author.
 
@@ -33,6 +34,7 @@ For each proposal ask:
 - do outermost columns include full character width?
 - do vertical bounds preserve full text-bearing height?
 - are any crops suspiciously narrow or wide versus neighbors?
+- did template fit drift so far that parity prior is no longer credible?
 
 ## Accept
 
@@ -51,6 +53,7 @@ Adjust proposal when:
 - detector is directionally right but one or two boundaries need widening/nudging
 - outer margins need more room
 - top/bottom should include more text-bearing height
+- template fit needs small local corrections but family layout is still right
 
 Prefer editing proposal JSON over inventing brand-new command arguments.
 

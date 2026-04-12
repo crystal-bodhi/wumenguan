@@ -11,7 +11,7 @@ This skill processes one scanned page image at a time and produces one PNG per r
 
 ## Core Rule
 
-Use Python to propose geometry first. Use model judgment to review structured candidate geometry in light of later OCR suitability. Do not originate pixel-perfect shell arguments from scratch unless proposal path is unavailable and you are fully blocked.
+Use parity-specific template fitting first. Use detector-only proposal as fallback or diagnostic path. Use model judgment to review structured candidate geometry in light of later OCR suitability. Do not originate pixel-perfect shell arguments from scratch unless both template and proposal paths are unavailable and you are fully blocked.
 
 ## Inputs
 
@@ -23,19 +23,20 @@ Use Python to propose geometry first. Use model judgment to review structured ca
 ## Required Workflow
 
 1. Confirm input is one PNG page image.
-2. Run `scripts/column_detect.py` to produce:
+2. Run `scripts/column_fit_template.py` to produce:
    - JSON proposal
    - optional overlay preview when useful
-3. Review proposal with downstream goal in mind:
+3. Review template-fitted proposal with downstream goal in mind:
    - one crop per reading column
    - avoid cuts through characters
    - acceptable to include some gutter/background
    - unacceptable to split one column or merge adjacent columns
-4. If proposal is defensible, run `scripts/column_crop.py --proposal ... --dry-run`.
-5. Inspect dry-run plan.
-6. If still defensible, run final crop from same proposal.
-7. Confirm output PNGs exist in reading order.
-8. If progress or summary artifact paths were provided, write required machine-readable artifacts.
+4. If template fit is clearly bad, use `scripts/column_detect.py` as fallback diagnostic proposal and compare.
+5. If proposal is defensible, run `scripts/column_crop.py --proposal ... --dry-run`.
+6. Inspect dry-run plan.
+7. If still defensible, run final crop from same proposal.
+8. Confirm output PNGs exist in reading order.
+9. If progress or summary artifact paths were provided, write required machine-readable artifacts.
 
 ## When To Block
 
@@ -67,9 +68,15 @@ Reject:
 
 Use these scripts:
 
+- `scripts/column_fit_template.py`
+  - loads parity-specific left/right page template
+  - scales template to page size
+  - searches small global x-shift
+  - emits proposal JSON and optional overlay
 - `scripts/column_detect.py`
-  - proposes explicit column geometry JSON
-  - may also write overlay preview
+  - fallback detector-first proposal path
+  - useful when template fit is clearly wrong or for diagnostic comparison
+
 - `scripts/column_crop.py`
   - crops from proposal or explicit bounds
   - supports configurable padding
@@ -77,12 +84,20 @@ Use these scripts:
 
 ## Preferred Commands
 
-### Proposal
+### Template Proposal
+
+```bash
+python scripts/column_fit_template.py input/page.png \
+  --output-json /tmp/page-proposal.json \
+  --overlay /tmp/page-overlay.png
+```
+
+### Fallback Detector Proposal
 
 ```bash
 python scripts/column_detect.py input/page.png \
-  --output-json /tmp/page-proposal.json \
-  --overlay /tmp/page-overlay.png
+  --output-json /tmp/page-detect-proposal.json \
+  --overlay /tmp/page-detect-overlay.png
 ```
 
 ### Validation

@@ -10,8 +10,9 @@ Required behavior:
 - process only this one image
 - do not compare against, inspect, or incorporate any other page
 - keep downstream goal in view: produce crops suitable for later OCR/transcription without bisecting characters
-- run `scripts/column_detect.py` first to generate structured candidate geometry
-- review detector proposal, not raw shell arguments, unless proposal path is blocked
+- use parity-specific template fitting first
+- only use detector-first proposal path as fallback or diagnostic comparison when template fit looks wrong
+- review structured proposal, not raw shell arguments, unless proposal path is blocked
 - run `scripts/column_crop.py --proposal ... --dry-run` before final write
 - if crop plan is defensible, write final column PNGs only under default output directory from `scripts/column_crop.py` (`DEFAULT_OUTPUT_DIR/<page_stem>/`)
 - prefer slightly generous margins over tight crops

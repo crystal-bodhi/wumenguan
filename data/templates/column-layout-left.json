@@ -1,0 +1,28 @@
+{
+  "template_name": "column-layout-left",
+  "parity": "even",
+  "template_width": 2084,
+  "template_height": 3078,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3078,
+  "pad_left": 20,
+  "pad_right": 20,
+  "pad_top": 0,
+  "pad_bottom": 0,
+  "expected_columns": 8,
+  "columns": [
+    { "index": 1, "left": 1703, "right": 2025 },
+    { "index": 2, "left": 1493, "right": 1688 },
+    { "index": 3, "left": 1246, "right": 1483 },
+    { "index": 4, "left": 1004, "right": 1246 },
+    { "index": 5, "left": 752, "right": 981 },
+    { "index": 6, "left": 519, "right": 752 },
+    { "index": 7, "left": 287, "right": 503 },
+    { "index": 8, "left": 0, "right": 287 }
+  ],
+  "notes": [
+    "Seeded from page_0018 proposal, with border-side split merged back into outermost column.",
+    "Left-page template. Needs review against more even pages before production use."
+  ]
+}

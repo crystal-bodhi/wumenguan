@@ -1,0 +1,28 @@
+{
+  "template_name": "column-layout-right",
+  "parity": "odd",
+  "template_width": 2139,
+  "template_height": 3094,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3094,
+  "pad_left": 20,
+  "pad_right": 20,
+  "pad_top": 0,
+  "pad_bottom": 0,
+  "expected_columns": 8,
+  "columns": [
+    { "index": 1, "left": 1865, "right": 2139 },
+    { "index": 2, "left": 1613, "right": 1865 },
+    { "index": 3, "left": 1392, "right": 1612 },
+    { "index": 4, "left": 1139, "right": 1392 },
+    { "index": 5, "left": 678, "right": 1139 },
+    { "index": 6, "left": 203, "right": 678 },
+    { "index": 7, "left": 95, "right": 203 },
+    { "index": 8, "left": 0, "right": 92 }
+  ],
+  "notes": [
+    "Seeded from page_0011 proposal.",
+    "Right-page template. Outer border noise expected on one side; allow fitter x-shift and later manual refinement."
+  ]
+}
