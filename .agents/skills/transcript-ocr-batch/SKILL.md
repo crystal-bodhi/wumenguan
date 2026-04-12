@@ -7,60 +7,60 @@ description: Dispatch isolated batch OCR transcription runs through `$transcript
 
 ## Purpose
 
-Dispatch many page-level OCR jobs while preserving strict per-page isolation. This skill is a batch runner, not an OCR worker.
+Dispatch many page OCR jobs. Keep per-page isolation. Batch runner, not OCR worker.
 
 ## When to use
 
-- You want to process many scan images in one top-level invocation.
-- You want one isolated child execution per page.
-- You want auditable batch artifacts for review.
-- You want outputs written under `data/transcripts/codex/`.
+- Process many scan images in one invocation
+- Want isolated child execution per page  
+- Want auditable batch artifacts
+- Want outputs under `data/transcripts/codex/`
 
 ## When not to use
 
-- Single-page transcription.
-- Direct OCR in the current run.
-- Cross-page comparison, reconciliation, or merged transcription.
-- Editorial normalization or synthesis across pages.
+- Single-page transcription
+- Direct OCR in current run
+- Cross-page comparison/reconciliation/merged transcription
+- Editorial normalization/synthesis across pages
 
 ## Inputs
 
-- A batch manifest with one source image path per line.
-- If the user provides an explicit file list, convert it into a manifest before running the batch script.
+- Batch manifest with one source image path per line
+- User file list converts to manifest before batch script
 
 ## Output contract
 
-For each source image, produce exactly one transcript file under `data/transcripts/codex/` using the canonical `--transcript.md` naming rule already defined by `$transcript-ocr`.
+Each source image produces one transcript file under `data/transcripts/codex/` using canonical `--transcript.md` naming from `$transcript-ocr`.
 
-For each batch run, produce a dedicated run directory under `data/transcripts/codex/_batch_runs/` containing prompts, logs, traces, progress artifacts, child summaries, `status.tsv`, `summary.json`, and `summary.md`.
+Each batch run produces dedicated run directory under `data/transcripts/codex/_batch_runs/` with prompts, logs, traces, progress artifacts, child summaries, `status.tsv`, `summary.json`, `summary.md`.
 
 ## Rules
 
-- Use `$transcript-ocr` for every child run.
-- Keep each child run limited to one image and one required transcript path.
-- Do not let child runs compare against or depend on other pages or transcripts.
-- Do not overwrite existing transcript outputs by default.
-- Do not use network access.
+- Use `$transcript-ocr` for every child run
+- Limit each child to one image and one transcript path
+- No child cross-page comparison/dependencies  
+- No overwrite existing transcripts by default
+- No network access
 
 ## Failure policy
 
-- Missing source image path: failed item.
-- Duplicate source image path: failed item.
-- Duplicate target output path: blocked item.
-- Existing required output file: blocked item.
-- Child non-zero exit, missing required output, extra transcript files, or invalid transcript structure: failed item.
-- Batch setup failure before dispatch: stop and report the blocking issue.
+- Missing source: failed item
+- Duplicate source: failed item
+- Duplicate target: blocked item
+- Existing output: blocked item
+- Child non-zero exit/missing output/extra files/invalid structure: failed item
+- Batch setup failure: stop and report
 
 ## Success checks
 
-- Each requested item is either completed, failed, or blocked with a recorded reason.
-- Each completed item produced exactly one required transcript file and no extra transcript files.
-- Each completed item has prompt, log, and trace artifacts.
-- Each completed item has progress and child summary artifacts with non-regressing live status updates.
-- Each completed transcript satisfies the required transcript structure contract.
-- The batch run emitted `status.tsv`, `summary.json`, and `summary.md`.
+- Each item completed/failed/blocked with reason
+- Each completed item has one transcript file, no extras
+- Each completed has prompt/log/trace artifacts
+- Each completed has progress/summary with live status updates
+- Each transcript meets structure contract
+- Batch emitted `status.tsv`, `summary.json`, `summary.md`
 
 ## Examples
 
-- Manifest-driven batch transcription.
-- User-provided file list converted to manifest, then dispatched as isolated child runs.
+- Manifest-driven batch transcription
+- User file list → manifest → isolated child runs
