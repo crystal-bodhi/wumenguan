@@ -16,6 +16,14 @@ COLUMN_OUTPUT_DIR: Final[Path] = Path("data/branch_a_preservation/column_views")
 COLUMN_SUFFIX_TOKEN: Final[str] = "--col-"
 CHILD_ENV_CHECK_PROMPT: Final[str] = "Reply with exactly OK."
 CHILD_ENV_CHECK_TIMEOUT_SECONDS: Final[int] = 45
+CHILD_POLL_INTERVAL_SECONDS: Final[float] = 2.0
+REQUIRED_COMPLETED_PROGRESS_STATUSES: Final[tuple[str, ...]] = (
+    "started",
+    "dry_run_started",
+    "dry_run_completed",
+    "writing_outputs",
+    "completed",
+)
 CHILD_PROMPT_TEMPLATE: Final[str] = """Use skill `ancient-chinese-column-crop`.
 
 Process exactly one PNG page image in this run.
@@ -23,10 +31,24 @@ Process exactly one PNG page image in this run.
 Input image:
 - <INPUT_IMAGE>
 
+Progress artifact:
+- <PROGRESS_FILE>
+
+Summary artifact:
+- <SUMMARY_FILE>
+
 Required behavior:
 - use skill `ancient-chinese-column-crop` for full workflow
 - process only this one image
 - do not compare against, inspect, or incorporate any other page
+- append machine-readable progress events with `python scripts/child_status.py progress`
+- write final machine-readable child summary with `python scripts/child_status.py summary`
+- emit at least these statuses in order when successful:
+  - `started`
+  - `dry_run_started`
+  - `dry_run_completed`
+  - `writing_outputs`
+  - `completed`
 - run `scripts/column_crop.py --dry-run` first
 - if crop plan is defensible, write final column PNGs only under `data/branch_a_preservation/column_views/<page_stem>/`
 - do not overwrite existing output files
@@ -51,11 +73,14 @@ class ItemResult:
     prompt_file: str
     log_file: str
     trace_file: str
+    progress_file: str
+    child_summary_file: str
     status: str
     reason: str | None
     exit_code: int | None
     output_count: int
     output_files: list[str]
+    last_progress_status: str | None
 
 
 @dataclass(frozen=True)
@@ -73,6 +98,8 @@ class BatchRunPaths:
     prompts_dir: Path
     logs_dir: Path
     traces_dir: Path
+    progress_dir: Path
+    child_summaries_dir: Path
     status_tsv: Path
     summary_json: Path
     summary_md: Path
@@ -83,6 +110,12 @@ class ChildRunResult:
     exit_code: int
     output_files: list[str]
     unexpected_outputs: list[str]
+    progress_statuses: list[str]
+    last_progress_status: str | None
+    child_summary_exists: bool
+    child_summary_status: str | None
+    progress_contract_valid: bool
+    progress_contract_reason: str | None
 
 
 class BatchSetupError(RuntimeError):
@@ -145,6 +178,8 @@ def main(argv: list[str] | None = None) -> int:
         prompt_path = batch_run_paths.prompts_dir / f"{entry.page_stem}--prompt.md"
         log_path = batch_run_paths.logs_dir / f"{entry.page_stem}--stderr.log"
         trace_path = batch_run_paths.traces_dir / f"{entry.page_stem}--trace.jsonl"
+        progress_path = batch_run_paths.progress_dir / f"{entry.page_stem}--progress.jsonl"
+        child_summary_path = batch_run_paths.child_summaries_dir / f"{entry.page_stem}--summary.json"
 
         result = ItemResult(
             index=entry.index,
@@ -153,21 +188,25 @@ def main(argv: list[str] | None = None) -> int:
             prompt_file=display_path(prompt_path),
             log_file=display_path(log_path),
             trace_file=display_path(trace_path),
+            progress_file=display_path(progress_path),
+            child_summary_file=display_path(child_summary_path),
             status="pending",
             reason=None,
             exit_code=None,
             output_count=0,
             output_files=[],
+            last_progress_status=None,
         )
 
         preflight = validate_entry(entry=entry, output_dir=args.output_dir, duplicate_sources=duplicate_sources)
-        write_prompt(prompt_path, build_child_prompt(entry))
+        write_prompt(prompt_path, build_child_prompt(entry, progress_path=progress_path, child_summary_path=child_summary_path))
 
         if preflight is not None:
             result.status = preflight.status
             result.reason = preflight.reason
             touch_file(log_path)
             touch_file(trace_path)
+            touch_file(progress_path)
             results.append(result)
             if args.fail_fast:
                 break
@@ -179,10 +218,13 @@ def main(argv: list[str] | None = None) -> int:
             prompt_path=prompt_path,
             log_path=log_path,
             trace_path=trace_path,
+            progress_path=progress_path,
+            child_summary_path=child_summary_path,
         )
         result.exit_code = child_result.exit_code
         result.output_files = child_result.output_files
         result.output_count = len(child_result.output_files)
+        result.last_progress_status = child_result.last_progress_status
 
         if child_result.exit_code != 0:
             result.status = "failed"
@@ -193,6 +235,15 @@ def main(argv: list[str] | None = None) -> int:
         elif child_result.unexpected_outputs:
             result.status = "failed"
             result.reason = "child created outputs for unexpected page stem"
+        elif not child_result.child_summary_exists:
+            result.status = "failed"
+            result.reason = "child summary artifact missing"
+        elif child_result.child_summary_status != "completed":
+            result.status = "failed"
+            result.reason = "child summary did not report completed"
+        elif not child_result.progress_contract_valid:
+            result.status = "failed"
+            result.reason = child_result.progress_contract_reason
         else:
             result.status = "completed"
 
@@ -272,11 +323,15 @@ def create_batch_run_paths(
     prompts_dir = run_dir / "prompts"
     logs_dir = run_dir / "logs"
     traces_dir = run_dir / "traces"
+    progress_dir = run_dir / "progress"
+    child_summaries_dir = run_dir / "child_summaries"
 
     try:
         prompts_dir.mkdir(parents=True, exist_ok=False)
         logs_dir.mkdir(parents=True, exist_ok=False)
         traces_dir.mkdir(parents=True, exist_ok=False)
+        progress_dir.mkdir(parents=True, exist_ok=False)
+        child_summaries_dir.mkdir(parents=True, exist_ok=False)
     except FileExistsError as exc:
         raise BatchSetupError(f"batch run directory already exists: {run_dir}") from exc
     except OSError as exc:
@@ -290,6 +345,8 @@ def create_batch_run_paths(
         prompts_dir=prompts_dir,
         logs_dir=logs_dir,
         traces_dir=traces_dir,
+        progress_dir=progress_dir,
+        child_summaries_dir=child_summaries_dir,
         status_tsv=run_dir / "status.tsv",
         summary_json=run_dir / "summary.json",
         summary_md=run_dir / "summary.md",
@@ -330,8 +387,14 @@ def validate_entry(
     return None
 
 
-def build_child_prompt(entry: ManifestEntry) -> str:
-    return CHILD_PROMPT_TEMPLATE.replace("<INPUT_IMAGE>", display_path(entry.source_path))
+def build_child_prompt(entry: ManifestEntry, progress_path: Path, child_summary_path: Path) -> str:
+    return (
+        CHILD_PROMPT_TEMPLATE
+        .replace("<INPUT_IMAGE>", display_path(entry.source_path))
+        .replace("<page_stem>", entry.page_stem)
+        .replace("<PROGRESS_FILE>", display_path(progress_path))
+        .replace("<SUMMARY_FILE>", display_path(child_summary_path))
+    )
 
 
 def write_prompt(prompt_path: Path, content: str) -> None:
@@ -354,6 +417,8 @@ def run_child(
     prompt_path: Path,
     log_path: Path,
     trace_path: Path,
+    progress_path: Path,
+    child_summary_path: Path,
 ) -> ChildRunResult:
     preexisting_outputs = list_all_outputs(output_dir)
     command = build_codex_command(entry=entry)
@@ -361,14 +426,24 @@ def run_child(
     with prompt_path.open("r", encoding="utf-8") as prompt_handle, log_path.open(
         "w", encoding="utf-8"
     ) as log_handle, trace_path.open("w", encoding="utf-8") as trace_handle:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
             stdin=prompt_handle,
             stdout=trace_handle,
             stderr=log_handle,
             text=True,
-            check=False,
         )
+        while True:
+            exit_code = process.poll()
+            if exit_code is not None:
+                break
+            read_progress_events(progress_path)
+            try:
+                process.wait(timeout=CHILD_POLL_INTERVAL_SECONDS)
+            except subprocess.TimeoutExpired:
+                continue
+
+    completed_exit_code = process.returncode if process.returncode is not None else 1
 
     post_outputs = list_all_outputs(output_dir)
     new_outputs = sorted(post_outputs - preexisting_outputs)
@@ -384,10 +459,21 @@ def run_child(
         for path in new_outputs
         if path.parent != expected_dir or not path.name.startswith(expected_prefix)
     ]
+    progress_events = read_progress_events(progress_path)
+    progress_statuses = [event.get("status") for event in progress_events if isinstance(event.get("status"), str)]
+    last_progress_status = progress_statuses[-1] if progress_statuses else None
+    progress_contract_valid, progress_contract_reason = validate_progress_contract(progress_statuses)
+    child_summary = read_child_summary(child_summary_path)
     return ChildRunResult(
-        exit_code=completed.returncode,
+        exit_code=completed_exit_code,
         output_files=expected_outputs,
         unexpected_outputs=unexpected_outputs,
+        progress_statuses=progress_statuses,
+        last_progress_status=last_progress_status,
+        child_summary_exists=child_summary is not None,
+        child_summary_status=child_summary.get("status") if child_summary else None,
+        progress_contract_valid=progress_contract_valid,
+        progress_contract_reason=progress_contract_reason,
     )
 
 
@@ -448,6 +534,45 @@ def verify_child_codex_environment() -> None:
     )
 
 
+def read_progress_events(path: Path) -> list[dict[str, object]]:
+    if not path.exists():
+        return []
+    events: list[dict[str, object]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            events.append(payload)
+    return events
+
+
+def validate_progress_contract(progress_statuses: list[str]) -> tuple[bool, str | None]:
+    if not progress_statuses:
+        return False, "child progress artifact missing or empty"
+
+    cursor = 0
+    for required in REQUIRED_COMPLETED_PROGRESS_STATUSES:
+        try:
+            cursor = progress_statuses.index(required, cursor) + 1
+        except ValueError:
+            return False, f"child progress missing required status `{required}`"
+    return True, None
+
+
+def read_child_summary(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
 def list_all_outputs(directory: Path) -> set[Path]:
     if not directory.exists():
         return set()
@@ -503,6 +628,8 @@ def build_summary(
         "prompts_dir": display_path(batch_run_paths.prompts_dir),
         "logs_dir": display_path(batch_run_paths.logs_dir),
         "traces_dir": display_path(batch_run_paths.traces_dir),
+        "progress_dir": display_path(batch_run_paths.progress_dir),
+        "child_summaries_dir": display_path(batch_run_paths.child_summaries_dir),
         "status_tsv": display_path(batch_run_paths.status_tsv),
         "summary_json": display_path(batch_run_paths.summary_json),
         "summary_md": display_path(batch_run_paths.summary_md),
@@ -528,10 +655,13 @@ def write_status_tsv(path: Path, items: object) -> None:
         "reason",
         "exit_code",
         "output_count",
+        "last_progress_status",
         "input_image",
         "prompt_file",
         "log_file",
         "trace_file",
+        "progress_file",
+        "child_summary_file",
     ]
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, delimiter="\t")
@@ -559,6 +689,8 @@ def render_summary_markdown(summary: dict[str, object]) -> str:
         f"- `{summary['prompts_dir']}/`",
         f"- `{summary['logs_dir']}/`",
         f"- `{summary['traces_dir']}/`",
+        f"- `{summary['progress_dir']}/`",
+        f"- `{summary['child_summaries_dir']}/`",
         f"- `{summary['status_tsv']}`",
         f"- `{summary['summary_json']}`",
         f"- `{summary['summary_md']}`",

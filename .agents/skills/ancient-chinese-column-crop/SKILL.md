@@ -28,6 +28,8 @@ This skill processes one scanned page image of vertically arranged Ancient Chine
 - One input PNG page image.
 - Optional requested output directory.
 - Optional user constraints about reading order or crop region.
+- Optional progress artifact path.
+- Optional child summary artifact path.
 
 ## Derived decisions
 
@@ -49,7 +51,8 @@ Use `references/column-analysis-doctrine.md` for the model-side decision rules t
 3. Run the script once with `--dry-run` and inspect the resolved crop plan.
 4. If the dry-run plan matches the intended page structure, run the actual crop command.
 5. Confirm that one PNG was written per intended column in reading order.
-6. Report the resolved crop parameters, output directory, and any residual uncertainty.
+6. If progress or summary artifact paths were provided, write standardized child progress and final summary artifacts.
+7. Report the resolved crop parameters, output directory, and any residual uncertainty.
 
 ## Rules
 
@@ -60,6 +63,8 @@ Use `references/column-analysis-doctrine.md` for the model-side decision rules t
 - Do not guess silently: if the page is too degraded to defend a column structure, stop and report the blocker.
 - Use `--dry-run` before writing outputs.
 - Do not use network access for this workflow.
+- If caller provides progress artifact path, append machine-readable progress events with `scripts/child_status.py progress`.
+- If caller provides summary artifact path, write final machine-readable result with `scripts/child_status.py summary`.
 
 ## Script contract
 
