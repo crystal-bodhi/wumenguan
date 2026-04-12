@@ -18,12 +18,45 @@ TRANSCRIPT_SUFFIX: Final[str] = "--transcript.md"
 TRANSCRIPT_GLOB: Final[str] = f"*{TRANSCRIPT_SUFFIX}"
 REQUIRED_TABLE_HEADER: Final[str] = "| Line | Transcription | Uncertainty / Comments |"
 REQUIRED_TABLE_DIVIDER: Final[str] = "| --- | --- | --- |"
+CHILD_ENV_CHECK_PROMPT: Final[str] = "Reply with exactly OK."
+CHILD_ENV_CHECK_TIMEOUT_SECONDS: Final[int] = 45
+CHILD_POLL_INTERVAL_SECONDS: Final[float] = 2.0
+REQUIRED_COMPLETED_PROGRESS_STATUSES: Final[tuple[str, ...]] = (
+    "started",
+    "input_validated",
+    "image_inspection_started",
+    "image_inspection_completed",
+    "transcription_started",
+    "table_written",
+    "plain_block_written",
+    "completed",
+)
+KNOWN_PROGRESS_STATUS_ORDER: Final[dict[str, int]] = {
+    "started": 10,
+    "input_validated": 20,
+    "image_inspection_started": 30,
+    "image_inspection_checkpoint": 40,
+    "image_inspection_completed": 50,
+    "transcription_started": 60,
+    "transcription_checkpoint": 70,
+    "table_written": 80,
+    "plain_block_written": 85,
+    "completed": 90,
+    "failed": 90,
+    "blocked": 90,
+}
 CHILD_PROMPT_TEMPLATE: Final[str] = """$transcript-ocr
 
 Process exactly one scan image in this run.
 
 Input image:
 - <INPUT_IMAGE>
+
+Progress artifact:
+- <PROGRESS_FILE>
+
+Summary artifact:
+- <SUMMARY_FILE>
 
 Required output file:
 - <OUTPUT_FILE>
@@ -32,6 +65,23 @@ Execution constraints:
 - use the `$transcript-ocr` skill for the full workflow
 - process only this one image
 - do not compare against, inspect, or incorporate any other page or transcript
+- append machine-readable progress events with `python scripts/child_status.py progress`
+- write final machine-readable child summary with `python scripts/child_status.py summary`
+- emit these statuses live and in order when successful:
+  - `started`
+  - `input_validated`
+  - `image_inspection_started`
+  - `image_inspection_completed`
+  - `transcription_started`
+  - `table_written`
+  - `plain_block_written`
+  - `completed`
+- use `image_inspection_checkpoint` and `transcription_checkpoint` for extra live updates during long-running stages
+- emit `image_inspection_checkpoint` while still reviewing reading order, damaged regions, or uncertain glyph clusters
+- emit `transcription_checkpoint` while still drafting long pages or working through uncertainty-marked lines
+- write progress by appending to provided progress artifact only
+- do not rename, replace, rebuild, or backfill progress artifact after fact
+- final summary must report exactly one output file: required transcript path
 - write the result only to the required output file
 - do not produce any additional transcript files
 """
@@ -57,12 +107,56 @@ class ItemResult:
     prompt_file: str
     log_file: str
     trace_file: str
+    progress_file: str
+    child_summary_file: str
     status: str
     reason: str | None
     exit_code: int | None
     output_created: bool
     extra_transcript_files: list[str]
     transcript_structure_valid: bool
+    last_progress_status: str | None
+
+
+@dataclass(frozen=True)
+class PreflightResult:
+    status: str
+    reason: str
+
+
+@dataclass(frozen=True)
+class BatchRunPaths:
+    run_id: str
+    transcript_store_dir: Path
+    batch_runs_dir: Path
+    run_dir: Path
+    prompts_dir: Path
+    logs_dir: Path
+    traces_dir: Path
+    progress_dir: Path
+    child_summaries_dir: Path
+    status_tsv: Path
+    summary_json: Path
+    summary_md: Path
+
+
+@dataclass(frozen=True)
+class ChildRunResult:
+    exit_code: int
+    output_created: bool
+    extra_transcript_files: list[str]
+    transcript_structure_valid: bool
+    structure_reason: str | None
+    progress_statuses: list[str]
+    last_progress_status: str | None
+    child_summary_exists: bool
+    child_summary_status: str | None
+    progress_contract_valid: bool
+    progress_contract_reason: str | None
+
+
+class BatchSetupError(RuntimeError):
+    pass
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -108,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         ensure_dir(args.transcript_store_dir, "transcript store dir")
         ensure_dir(args.batch_runs_dir, "batch runs dir")
+        verify_child_codex_environment()
         batch_run_paths = create_batch_run_paths(
             transcript_store_dir=args.transcript_store_dir,
             batch_runs_dir=args.batch_runs_dir,
@@ -125,6 +220,8 @@ def main(argv: list[str] | None = None) -> int:
         prompt_path = batch_run_paths.prompts_dir / f"{entry.page_id}--prompt.md"
         log_path = batch_run_paths.logs_dir / f"{entry.page_id}--stderr.log"
         trace_path = batch_run_paths.traces_dir / f"{entry.page_id}--trace.jsonl"
+        progress_path = batch_run_paths.progress_dir / f"{entry.page_id}--progress.jsonl"
+        child_summary_path = batch_run_paths.child_summaries_dir / f"{entry.page_id}--summary.json"
 
         result = ItemResult(
             index=entry.index,
@@ -134,12 +231,15 @@ def main(argv: list[str] | None = None) -> int:
             prompt_file=display_path(prompt_path),
             log_file=display_path(log_path),
             trace_file=display_path(trace_path),
+            progress_file=display_path(progress_path),
+            child_summary_file=display_path(child_summary_path),
             status="pending",
             reason=None,
             exit_code=None,
             output_created=False,
             extra_transcript_files=[],
             transcript_structure_valid=False,
+            last_progress_status=None,
         )
 
         preflight = validate_entry(
@@ -147,23 +247,32 @@ def main(argv: list[str] | None = None) -> int:
             duplicate_sources=duplicate_sources,
             duplicate_outputs=duplicate_outputs,
         )
+        write_prompt(prompt_path, build_child_prompt(entry, progress_path, child_summary_path))
+
         if preflight is not None:
             result.status = preflight.status
             result.reason = preflight.reason
-            write_prompt(prompt_path, build_child_prompt(entry))
             touch_file(log_path)
             touch_file(trace_path)
+            touch_file(progress_path)
             results.append(result)
             if args.fail_fast:
                 break
             continue
 
-        write_prompt(prompt_path, build_child_prompt(entry))
-        child_result = run_child(entry=entry, prompt_path=prompt_path, log_path=log_path, trace_path=trace_path)
+        child_result = run_child(
+            entry=entry,
+            prompt_path=prompt_path,
+            log_path=log_path,
+            trace_path=trace_path,
+            progress_path=progress_path,
+            child_summary_path=child_summary_path,
+        )
         result.exit_code = child_result.exit_code
         result.output_created = child_result.output_created
         result.extra_transcript_files = child_result.extra_transcript_files
         result.transcript_structure_valid = child_result.transcript_structure_valid
+        result.last_progress_status = child_result.last_progress_status
 
         if child_result.exit_code != 0:
             result.status = "failed"
@@ -177,6 +286,15 @@ def main(argv: list[str] | None = None) -> int:
         elif not child_result.transcript_structure_valid:
             result.status = "failed"
             result.reason = child_result.structure_reason
+        elif not child_result.child_summary_exists:
+            result.status = "failed"
+            result.reason = "child summary artifact missing"
+        elif child_result.child_summary_status != "completed":
+            result.status = "failed"
+            result.reason = "child summary did not report completed"
+        elif not child_result.progress_contract_valid:
+            result.status = "failed"
+            result.reason = child_result.progress_contract_reason
         else:
             result.status = "completed"
 
@@ -197,39 +315,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.fail_fast and any(result.status != "completed" for result in results):
         return 1
     return 0
-
-
-class BatchSetupError(RuntimeError):
-    pass
-
-
-@dataclass(frozen=True)
-class PreflightResult:
-    status: str
-    reason: str
-
-
-@dataclass(frozen=True)
-class BatchRunPaths:
-    run_id: str
-    transcript_store_dir: Path
-    batch_runs_dir: Path
-    run_dir: Path
-    prompts_dir: Path
-    logs_dir: Path
-    traces_dir: Path
-    status_tsv: Path
-    summary_json: Path
-    summary_md: Path
-
-
-@dataclass(frozen=True)
-class ChildRunResult:
-    exit_code: int
-    output_created: bool
-    extra_transcript_files: list[str]
-    transcript_structure_valid: bool
-    structure_reason: str | None
 
 
 def load_manifest(manifest_path: Path) -> list[str]:
@@ -306,11 +391,15 @@ def create_batch_run_paths(
     prompts_dir = run_dir / "prompts"
     logs_dir = run_dir / "logs"
     traces_dir = run_dir / "traces"
+    progress_dir = run_dir / "progress"
+    child_summaries_dir = run_dir / "child_summaries"
 
     try:
         prompts_dir.mkdir(parents=True, exist_ok=False)
         logs_dir.mkdir(parents=True, exist_ok=False)
         traces_dir.mkdir(parents=True, exist_ok=False)
+        progress_dir.mkdir(parents=True, exist_ok=False)
+        child_summaries_dir.mkdir(parents=True, exist_ok=False)
     except FileExistsError as exc:
         raise BatchSetupError(f"batch run directory already exists: {run_dir}") from exc
     except OSError as exc:
@@ -324,6 +413,8 @@ def create_batch_run_paths(
         prompts_dir=prompts_dir,
         logs_dir=logs_dir,
         traces_dir=traces_dir,
+        progress_dir=progress_dir,
+        child_summaries_dir=child_summaries_dir,
         status_tsv=run_dir / "status.tsv",
         summary_json=run_dir / "summary.json",
         summary_md=run_dir / "summary.md",
@@ -371,9 +462,11 @@ def validate_entry(
     return None
 
 
-def build_child_prompt(entry: ManifestEntry) -> str:
+def build_child_prompt(entry: ManifestEntry, progress_path: Path, child_summary_path: Path) -> str:
     return (
         CHILD_PROMPT_TEMPLATE.replace("<INPUT_IMAGE>", display_path(entry.source_path))
+        .replace("<PROGRESS_FILE>", display_path(progress_path))
+        .replace("<SUMMARY_FILE>", display_path(child_summary_path))
         .replace("<OUTPUT_FILE>", display_path(entry.output_path))
     )
 
@@ -392,22 +485,38 @@ def touch_file(path: Path) -> None:
         raise BatchSetupError(f"failed to create artifact file {path}: {exc}") from exc
 
 
-def run_child(entry: ManifestEntry, prompt_path: Path, log_path: Path, trace_path: Path) -> ChildRunResult:
+def run_child(
+    entry: ManifestEntry,
+    prompt_path: Path,
+    log_path: Path,
+    trace_path: Path,
+    progress_path: Path,
+    child_summary_path: Path,
+) -> ChildRunResult:
     preexisting_transcripts = list_transcripts(entry.output_path.parent)
     command = build_codex_command(entry=entry)
 
     with prompt_path.open("r", encoding="utf-8") as prompt_handle, log_path.open(
         "w", encoding="utf-8"
     ) as log_handle, trace_path.open("w", encoding="utf-8") as trace_handle:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
             stdin=prompt_handle,
             stdout=trace_handle,
             stderr=log_handle,
             text=True,
-            check=False,
         )
+        while True:
+            exit_code = process.poll()
+            if exit_code is not None:
+                break
+            read_progress_events(progress_path)
+            try:
+                process.wait(timeout=CHILD_POLL_INTERVAL_SECONDS)
+            except subprocess.TimeoutExpired:
+                continue
 
+    completed_exit_code = process.returncode if process.returncode is not None else 1
     post_transcripts = list_transcripts(entry.output_path.parent)
     new_transcripts = sorted(post_transcripts - preexisting_transcripts)
     expected_output = entry.output_path.resolve(strict=False)
@@ -420,13 +529,27 @@ def run_child(entry: ManifestEntry, prompt_path: Path, log_path: Path, trace_pat
     structure_reason: str | None = None
     if entry.output_path.is_file():
         structure_valid, structure_reason = validate_transcript_structure(entry.output_path)
+    child_summary = read_child_summary(child_summary_path)
+    progress_events = read_progress_events(progress_path)
+    progress_statuses = [event.get("status") for event in progress_events if isinstance(event.get("status"), str)]
+    last_progress_status = progress_statuses[-1] if progress_statuses else None
+    progress_contract_valid, progress_contract_reason = validate_progress_artifacts(
+        progress_path=progress_path,
+        progress_statuses=progress_statuses,
+    )
 
     return ChildRunResult(
-        exit_code=completed.returncode,
+        exit_code=completed_exit_code,
         output_created=entry.output_path.is_file(),
         extra_transcript_files=extra_outputs,
         transcript_structure_valid=structure_valid,
         structure_reason=structure_reason,
+        progress_statuses=progress_statuses,
+        last_progress_status=last_progress_status,
+        child_summary_exists=child_summary is not None,
+        child_summary_status=child_summary.get("status") if child_summary else None,
+        progress_contract_valid=progress_contract_valid,
+        progress_contract_reason=progress_contract_reason,
     )
 
 
@@ -449,10 +572,120 @@ def build_codex_command(entry: ManifestEntry) -> list[str]:
     ]
 
 
+def verify_child_codex_environment() -> None:
+    workspace_root = Path.cwd().resolve(strict=False)
+    command = [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        str(workspace_root),
+        "--json",
+        "-",
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            input=CHILD_ENV_CHECK_PROMPT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=CHILD_ENV_CHECK_TIMEOUT_SECONDS,
+        )
+    except FileNotFoundError as exc:
+        raise BatchSetupError("codex executable not found in PATH") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise BatchSetupError(
+            "child codex exec preflight timed out; rerun the top-level batch outside the sandbox"
+        ) from exc
+
+    if completed.returncode == 0:
+        return
+
+    stderr = (completed.stderr or "").strip()
+    stderr_tail = "\n".join(stderr.splitlines()[-4:]) if stderr else "no stderr"
+    raise BatchSetupError(
+        "child codex exec preflight failed; rerun the top-level batch outside the sandbox. "
+        f"stderr tail: {stderr_tail}"
+    )
+
+
 def list_transcripts(directory: Path) -> set[Path]:
     if not directory.exists():
         return set()
     return {path.resolve(strict=False) for path in directory.glob(TRANSCRIPT_GLOB) if path.is_file()}
+
+
+def read_progress_events(path: Path) -> list[dict[str, object]]:
+    if not path.exists():
+        return []
+    events: list[dict[str, object]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            events.append(payload)
+    return events
+
+
+def validate_progress_artifacts(
+    progress_path: Path,
+    progress_statuses: list[str],
+) -> tuple[bool, str | None]:
+    sibling_conflicts = find_progress_artifact_conflicts(progress_path)
+    if sibling_conflicts:
+        conflict_names = ", ".join(path.name for path in sibling_conflicts)
+        return False, f"unexpected extra progress artifacts detected: {conflict_names}"
+    return validate_progress_contract(progress_statuses)
+
+
+def find_progress_artifact_conflicts(progress_path: Path) -> list[Path]:
+    pattern = f"{progress_path.stem}*.jsonl"
+    conflicts = []
+    for path in progress_path.parent.glob(pattern):
+        if path.resolve(strict=False) == progress_path.resolve(strict=False):
+            continue
+        if path.is_file():
+            conflicts.append(path.resolve(strict=False))
+    return sorted(conflicts)
+
+
+def validate_progress_contract(progress_statuses: list[str]) -> tuple[bool, str | None]:
+    if not progress_statuses:
+        return False, "child progress artifact missing or empty"
+
+    last_rank = None
+    for status in progress_statuses:
+        rank = KNOWN_PROGRESS_STATUS_ORDER.get(status)
+        if rank is None:
+            continue
+        if last_rank is not None and rank < last_rank:
+            return False, f"child progress regressed at status `{status}`"
+        last_rank = rank
+
+    cursor = 0
+    for required in REQUIRED_COMPLETED_PROGRESS_STATUSES:
+        try:
+            cursor = progress_statuses.index(required, cursor) + 1
+        except ValueError:
+            return False, f"child progress missing required status `{required}`"
+    return True, None
+
+
+def read_child_summary(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
 
 
 def validate_transcript_structure(output_path: Path) -> tuple[bool, str | None]:
@@ -536,6 +769,8 @@ def build_summary(
         "prompts_dir": display_path(batch_run_paths.prompts_dir),
         "logs_dir": display_path(batch_run_paths.logs_dir),
         "traces_dir": display_path(batch_run_paths.traces_dir),
+        "progress_dir": display_path(batch_run_paths.progress_dir),
+        "child_summaries_dir": display_path(batch_run_paths.child_summaries_dir),
         "status_tsv": display_path(batch_run_paths.status_tsv),
         "summary_json": display_path(batch_run_paths.summary_json),
         "summary_md": display_path(batch_run_paths.summary_md),
@@ -567,6 +802,12 @@ def write_status_tsv(status_tsv: Path, items: object) -> None:
                 "exit_code",
                 "output_created",
                 "transcript_structure_valid",
+                "last_progress_status",
+                "prompt_file",
+                "log_file",
+                "trace_file",
+                "progress_file",
+                "child_summary_file",
                 "extra_transcript_files",
             ]
         )
@@ -585,6 +826,12 @@ def write_status_tsv(status_tsv: Path, items: object) -> None:
                     "" if item["exit_code"] is None else item["exit_code"],
                     "1" if item["output_created"] else "0",
                     "1" if item["transcript_structure_valid"] else "0",
+                    item["last_progress_status"] or "",
+                    item["prompt_file"],
+                    item["log_file"],
+                    item["trace_file"],
+                    item["progress_file"],
+                    item["child_summary_file"],
                     ",".join(extra_files),
                 ]
             )
@@ -622,6 +869,8 @@ def render_summary_markdown(summary: dict[str, object]) -> str:
         f"- `{summary['prompts_dir']}/`",
         f"- `{summary['logs_dir']}/`",
         f"- `{summary['traces_dir']}/`",
+        f"- `{summary['progress_dir']}/`",
+        f"- `{summary['child_summaries_dir']}/`",
         f"- `{summary['status_tsv']}`",
         f"- `{summary['summary_json']}`",
         f"- `{summary['summary_md']}`",
@@ -638,7 +887,8 @@ def render_summary_markdown(summary: dict[str, object]) -> str:
                 (
                     f"- `{item['page_id']}` status=`{item['status']}` exit_code=`{exit_code}` "
                     f"output_created=`{item['output_created']}` "
-                    f"structure_valid=`{item['transcript_structure_valid']}`"
+                    f"structure_valid=`{item['transcript_structure_valid']}` "
+                    f"last_progress=`{item['last_progress_status']}`"
                 ),
                 f"  input: `{item['input_image']}`",
                 f"  output: `{item['output_file']}`",

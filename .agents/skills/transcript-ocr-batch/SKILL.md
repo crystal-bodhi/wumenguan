@@ -32,7 +32,7 @@ Dispatch many page-level OCR jobs while preserving strict per-page isolation. Th
 
 For each source image, produce exactly one transcript file under `data/transcripts/codex/` using the canonical `--transcript.md` naming rule already defined by `$transcript-ocr`.
 
-For each batch run, produce a dedicated run directory under `data/transcripts/codex/_batch_runs/` containing prompts, logs, traces, `status.tsv`, `summary.json`, and `summary.md`.
+For each batch run, produce a dedicated run directory under `data/transcripts/codex/_batch_runs/` containing prompts, logs, traces, progress artifacts, child summaries, `status.tsv`, `summary.json`, and `summary.md`.
 
 ## Rules
 
@@ -56,6 +56,7 @@ For each batch run, produce a dedicated run directory under `data/transcripts/co
 - Each requested item is either completed, failed, or blocked with a recorded reason.
 - Each completed item produced exactly one required transcript file and no extra transcript files.
 - Each completed item has prompt, log, and trace artifacts.
+- Each completed item has progress and child summary artifacts with non-regressing live status updates.
 - Each completed transcript satisfies the required transcript structure contract.
 - The batch run emitted `status.tsv`, `summary.json`, and `summary.md`.
 

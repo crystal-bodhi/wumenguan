@@ -28,6 +28,8 @@ Produce a strict OCR transcription of the visible source text in a single scan i
 
 - A single source scan image.
 - The source filename used to derive the output filename.
+- Optional progress artifact path.
+- Optional child summary artifact path.
 
 ## Output File Rule
 
@@ -68,6 +70,7 @@ Produce a strict OCR transcription of the visible source text in a single scan i
    - second, after a horizontal rule line `---`, a plain line-by-line transcription block that repeats the `Transcription` column exactly
 8. Number lines in reading order starting at 1.
 9. Write only the required output content to the transcript file. Do not add prose before, between, or after the two required sections.
+10. If progress or summary artifact paths were provided, write required machine-readable artifacts.
 
 ## Output Contract
 
