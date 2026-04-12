@@ -2,10 +2,25 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+KNOWN_PROGRESS_STATUS_ORDER = {
+    "started": 10,
+    "input_validated": 20,
+    "analysis_started": 30,
+    "analysis_checkpoint": 40,
+    "analysis_resolved": 50,
+    "dry_run_started": 60,
+    "dry_run_completed": 70,
+    "writing_outputs": 80,
+    "completed": 90,
+    "failed": 90,
+    "blocked": 90,
+}
 
 
 def utc_now_iso() -> str:
@@ -25,6 +40,38 @@ def ensure_parent(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
 
+def load_existing_progress(handle: object) -> list[dict[str, object]]:
+    handle.seek(0)
+    events: list[dict[str, object]] = []
+    for line in handle.read().splitlines():
+        if not line.strip():
+            continue
+        payload = json.loads(line)
+        if isinstance(payload, dict):
+            events.append(payload)
+    return events
+
+
+def validate_progress_append(statuses: list[str], new_status: str) -> None:
+    terminal_statuses = {"completed", "failed", "blocked"}
+    if statuses and statuses[-1] in terminal_statuses:
+        raise ValueError("progress artifact already ended with terminal status")
+
+    existing_rank = None
+    for status in reversed(statuses):
+        if status in KNOWN_PROGRESS_STATUS_ORDER:
+            existing_rank = KNOWN_PROGRESS_STATUS_ORDER[status]
+            break
+
+    new_rank = KNOWN_PROGRESS_STATUS_ORDER.get(new_status)
+    if existing_rank is None or new_rank is None:
+        return
+    if new_rank < existing_rank:
+        raise ValueError(
+            f"progress status regression: last known status rank {existing_rank}, new status `{new_status}`"
+        )
+
+
 def write_progress(args: argparse.Namespace) -> int:
     extra = load_extra(args.data_json)
     payload: dict[str, object] = {
@@ -40,8 +87,15 @@ def write_progress(args: argparse.Namespace) -> int:
         payload["data"] = extra
 
     ensure_parent(args.file)
-    with args.file.open("a", encoding="utf-8") as handle:
+    with args.file.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        events = load_existing_progress(handle)
+        statuses = [event.get("status") for event in events if isinstance(event.get("status"), str)]
+        validate_progress_append(statuses, args.status)
+        handle.seek(0, 2)
         handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+        handle.flush()
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
     return 0
 
 

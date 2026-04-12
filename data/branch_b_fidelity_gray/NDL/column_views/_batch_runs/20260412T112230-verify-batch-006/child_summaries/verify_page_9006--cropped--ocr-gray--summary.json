@@ -1,0 +1,54 @@
+{
+  "ts": "2026-04-12T16:25:06Z",
+  "status": "completed",
+  "page_stem": "verify_page_9006",
+  "input_image": "/tmp/verify_page_9006--cropped--ocr-gray.png",
+  "message": "Explicit RTL 7-column crop completed successfully.",
+  "output_dir": "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray",
+  "output_count": 7,
+  "output_files": [
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-01.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-02.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-03.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-04.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-05.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-06.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/verify_page_9006--cropped--ocr-gray/verify_page_9006--cropped--ocr-gray--col-07.png"
+  ],
+  "data": {
+    "mode": "explicit",
+    "order": "rtl",
+    "top": 0,
+    "bottom": 3109,
+    "columns": [
+      {
+        "left": 1893,
+        "right": 2052
+      },
+      {
+        "left": 1682,
+        "right": 1893
+      },
+      {
+        "left": 1436,
+        "right": 1682
+      },
+      {
+        "left": 1192,
+        "right": 1436
+      },
+      {
+        "left": 977,
+        "right": 1192
+      },
+      {
+        "left": 677,
+        "right": 977
+      },
+      {
+        "left": 501,
+        "right": 677
+      }
+    ]
+  }
+}

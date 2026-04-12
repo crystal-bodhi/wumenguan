@@ -20,11 +20,27 @@ CHILD_ENV_CHECK_TIMEOUT_SECONDS: Final[int] = 45
 CHILD_POLL_INTERVAL_SECONDS: Final[float] = 2.0
 REQUIRED_COMPLETED_PROGRESS_STATUSES: Final[tuple[str, ...]] = (
     "started",
+    "input_validated",
+    "analysis_started",
+    "analysis_resolved",
     "dry_run_started",
     "dry_run_completed",
     "writing_outputs",
     "completed",
 )
+KNOWN_PROGRESS_STATUS_ORDER: Final[dict[str, int]] = {
+    "started": 10,
+    "input_validated": 20,
+    "analysis_started": 30,
+    "analysis_checkpoint": 40,
+    "analysis_resolved": 50,
+    "dry_run_started": 60,
+    "dry_run_completed": 70,
+    "writing_outputs": 80,
+    "completed": 90,
+    "failed": 90,
+    "blocked": 90,
+}
 CHILD_PROMPT_TEMPLATE: Final[str] = """Use skill `column-crop`.
 
 Process exactly one PNG page image in this run.
@@ -44,12 +60,18 @@ Required behavior:
 - do not compare against, inspect, or incorporate any other page
 - append machine-readable progress events with `python scripts/child_status.py progress`
 - write final machine-readable child summary with `python scripts/child_status.py summary`
-- emit at least these statuses in order when successful:
+- emit these statuses live and in order when successful:
   - `started`
+  - `input_validated`
+  - `analysis_started`
+  - `analysis_resolved`
   - `dry_run_started`
   - `dry_run_completed`
   - `writing_outputs`
   - `completed`
+- use `analysis_checkpoint` for extra live updates during long analysis stretches
+- write progress by appending to provided progress artifact only
+- do not rename, replace, rebuild, or backfill progress artifact after fact
 - run `scripts/column_crop.py --dry-run` first
 - if crop plan is defensible, write final column PNGs only under default output directory from `scripts/column_crop.py` (`DEFAULT_OUTPUT_DIR/<page_stem>/`)
 - do not overwrite existing output files
@@ -446,15 +468,22 @@ def run_child(
 
     completed_exit_code = process.returncode if process.returncode is not None else 1
 
+    child_summary = read_child_summary(child_summary_path)
     post_outputs = list_all_outputs(output_dir)
     new_outputs = sorted(post_outputs - preexisting_outputs)
     expected_prefix = f"{entry.page_stem}{COLUMN_SUFFIX_TOKEN}"
     expected_dir = page_output_dir(output_dir, entry.page_stem)
-    expected_outputs = [
-        display_path(path)
+    expected_output_paths = [
+        path
         for path in new_outputs
         if path.parent == expected_dir and path.name.startswith(expected_prefix)
     ]
+    if not expected_output_paths:
+        expected_output_paths = summary_output_paths(
+            child_summary=child_summary,
+            expected_dir=expected_dir,
+            expected_prefix=expected_prefix,
+        )
     unexpected_outputs = [
         display_path(path)
         for path in new_outputs
@@ -463,11 +492,13 @@ def run_child(
     progress_events = read_progress_events(progress_path)
     progress_statuses = [event.get("status") for event in progress_events if isinstance(event.get("status"), str)]
     last_progress_status = progress_statuses[-1] if progress_statuses else None
-    progress_contract_valid, progress_contract_reason = validate_progress_contract(progress_statuses)
-    child_summary = read_child_summary(child_summary_path)
+    progress_contract_valid, progress_contract_reason = validate_progress_artifacts(
+        progress_path=progress_path,
+        progress_statuses=progress_statuses,
+    )
     return ChildRunResult(
         exit_code=completed_exit_code,
-        output_files=expected_outputs,
+        output_files=[display_path(path) for path in expected_output_paths],
         unexpected_outputs=unexpected_outputs,
         progress_statuses=progress_statuses,
         last_progress_status=last_progress_status,
@@ -551,9 +582,40 @@ def read_progress_events(path: Path) -> list[dict[str, object]]:
     return events
 
 
+def validate_progress_artifacts(
+    progress_path: Path,
+    progress_statuses: list[str],
+) -> tuple[bool, str | None]:
+    sibling_conflicts = find_progress_artifact_conflicts(progress_path)
+    if sibling_conflicts:
+        conflict_names = ", ".join(path.name for path in sibling_conflicts)
+        return False, f"unexpected extra progress artifacts detected: {conflict_names}"
+    return validate_progress_contract(progress_statuses)
+
+
+def find_progress_artifact_conflicts(progress_path: Path) -> list[Path]:
+    pattern = f"{progress_path.stem}*.jsonl"
+    conflicts = []
+    for path in progress_path.parent.glob(pattern):
+        if path.resolve(strict=False) == progress_path.resolve(strict=False):
+            continue
+        if path.is_file():
+            conflicts.append(path.resolve(strict=False))
+    return sorted(conflicts)
+
+
 def validate_progress_contract(progress_statuses: list[str]) -> tuple[bool, str | None]:
     if not progress_statuses:
         return False, "child progress artifact missing or empty"
+
+    last_rank = None
+    for status in progress_statuses:
+        rank = KNOWN_PROGRESS_STATUS_ORDER.get(status)
+        if rank is None:
+            continue
+        if last_rank is not None and rank < last_rank:
+            return False, f"child progress regressed at status `{status}`"
+        last_rank = rank
 
     cursor = 0
     for required in REQUIRED_COMPLETED_PROGRESS_STATUSES:
@@ -572,6 +634,32 @@ def read_child_summary(path: Path) -> dict[str, object] | None:
     except json.JSONDecodeError:
         return None
     return payload if isinstance(payload, dict) else None
+
+
+def summary_output_paths(
+    child_summary: dict[str, object] | None,
+    expected_dir: Path,
+    expected_prefix: str,
+) -> list[Path]:
+    if child_summary is None:
+        return []
+    output_files = child_summary.get("output_files")
+    if not isinstance(output_files, list):
+        return []
+
+    normalized: list[Path] = []
+    for raw_path in output_files:
+        if not isinstance(raw_path, str):
+            continue
+        path = Path(raw_path).resolve(strict=False)
+        if path.parent != expected_dir:
+            continue
+        if not path.name.startswith(expected_prefix):
+            continue
+        if not path.is_file():
+            continue
+        normalized.append(path)
+    return sorted(normalized)
 
 
 def list_all_outputs(directory: Path) -> set[Path]:
@@ -594,7 +682,7 @@ def list_page_outputs(directory: Path, page_stem: str) -> list[Path]:
 
 
 def page_output_dir(directory: Path, page_stem: str) -> Path:
-    return directory / page_stem
+    return (directory / page_stem).resolve(strict=False)
 
 
 def build_summary(
