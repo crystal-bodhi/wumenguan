@@ -1,0 +1,44 @@
+{
+  "ts": "2026-04-12T16:13:56Z",
+  "status": "completed",
+  "page_stem": "page_0009--cropped--ocr-gray",
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0009--cropped--ocr-gray.png",
+  "message": "Single-page column crop completed successfully.",
+  "output_dir": "data/branch_b_fidelity_gray/NDL/column_views/page_0009--cropped--ocr-gray",
+  "output_count": 4,
+  "output_files": [
+    "data/branch_b_fidelity_gray/NDL/column_views/page_0009--cropped--ocr-gray/page_0009--cropped--ocr-gray--col-01.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/page_0009--cropped--ocr-gray/page_0009--cropped--ocr-gray--col-02.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/page_0009--cropped--ocr-gray/page_0009--cropped--ocr-gray--col-03.png",
+    "data/branch_b_fidelity_gray/NDL/column_views/page_0009--cropped--ocr-gray/page_0009--cropped--ocr-gray--col-04.png"
+  ],
+  "data": {
+    "top": 60,
+    "bottom": 3050,
+    "order": "rtl",
+    "mode": "explicit",
+    "columns": [
+      {
+        "index": 1,
+        "left": 2038,
+        "right": 2120
+      },
+      {
+        "index": 2,
+        "left": 1918,
+        "right": 2028
+      },
+      {
+        "index": 3,
+        "left": 1670,
+        "right": 1822
+      },
+      {
+        "index": 4,
+        "left": 124,
+        "right": 196
+      }
+    ],
+    "residual_uncertainty": "Low-to-moderate due to bleed-through in the page center, but the four primary visible text bands are distinct enough for explicit cropping."
+  }
+}

@@ -1,8 +1,8 @@
-$column-crop-batch`
+$column-crop-batch
 
 Task:
 Process this manifest of PNG page images as isolated column-crop child runs:
-`data/batches/crop/batch-NNN.txt`.
+`data/batches/crop/batch-000.txt`.
 
 Required behavior:
 - one child run per manifest line

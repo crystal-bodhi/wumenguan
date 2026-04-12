@@ -11,7 +11,7 @@ from PIL import Image
 
 DEFAULT_ORDER = "rtl"
 DEFAULT_GAP = 0
-DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray/column_views")
+DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray/NDL/column_views")
 DEFAULT_LEFT_PADDING = 20
 DEFAULT_RIGHT_PADDING = 20
 DEFAULT_TOP_PADDING = 0

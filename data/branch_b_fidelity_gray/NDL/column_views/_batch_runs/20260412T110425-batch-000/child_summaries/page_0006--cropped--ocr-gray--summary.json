@@ -1,0 +1,67 @@
+{
+  "ts": "2026-04-12T16:08:05Z",
+  "status": "completed",
+  "page_stem": "page_0006--cropped--ocr-gray",
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0006--cropped--ocr-gray.png",
+  "message": "Explicit six-column crop written successfully after dry-run validation.",
+  "output_dir": "data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray",
+  "output_count": 6,
+  "output_files": [
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray/page_0006--cropped--ocr-gray--col-01.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray/page_0006--cropped--ocr-gray--col-02.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray/page_0006--cropped--ocr-gray--col-03.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray/page_0006--cropped--ocr-gray--col-04.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray/page_0006--cropped--ocr-gray--col-05.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0006--cropped--ocr-gray/page_0006--cropped--ocr-gray--col-06.png"
+  ],
+  "data": {
+    "mode": "explicit",
+    "order": "rtl",
+    "top": 20,
+    "bottom": 3045,
+    "columns": [
+      {
+        "index": 1,
+        "left": 1725,
+        "right": 2010,
+        "padded_left": 1705,
+        "padded_right": 2030
+      },
+      {
+        "index": 2,
+        "left": 1460,
+        "right": 1715,
+        "padded_left": 1440,
+        "padded_right": 1735
+      },
+      {
+        "index": 3,
+        "left": 1195,
+        "right": 1450,
+        "padded_left": 1175,
+        "padded_right": 1470
+      },
+      {
+        "index": 4,
+        "left": 940,
+        "right": 1185,
+        "padded_left": 920,
+        "padded_right": 1205
+      },
+      {
+        "index": 5,
+        "left": 700,
+        "right": 930,
+        "padded_left": 680,
+        "padded_right": 950
+      },
+      {
+        "index": 6,
+        "left": 430,
+        "right": 690,
+        "padded_left": 410,
+        "padded_right": 710
+      }
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "ts": "2026-04-12T16:12:09Z",
+  "status": "completed",
+  "page_stem": "page_0008--cropped--ocr-gray",
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0008--cropped--ocr-gray.png",
+  "message": "Column crop completed successfully with eight output columns",
+  "output_dir": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray",
+  "output_count": 8,
+  "output_files": [
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-01.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-02.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-03.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-04.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-05.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-06.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-07.png",
+    "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/column_views/page_0008--cropped--ocr-gray/page_0008--cropped--ocr-gray--col-08.png"
+  ],
+  "data": {
+    "top": 40,
+    "bottom": 2890,
+    "order": "rtl",
+    "mode": "explicit",
+    "columns": [
+      {
+        "index": 1,
+        "left": 1736,
+        "right": 1907
+      },
+      {
+        "index": 2,
+        "left": 1494,
+        "right": 1695
+      },
+      {
+        "index": 3,
+        "left": 1239,
+        "right": 1434
+      },
+      {
+        "index": 4,
+        "left": 1000,
+        "right": 1226
+      },
+      {
+        "index": 5,
+        "left": 784,
+        "right": 951
+      },
+      {
+        "index": 6,
+        "left": 537,
+        "right": 715
+      },
+      {
+        "index": 7,
+        "left": 308,
+        "right": 462
+      },
+      {
+        "index": 8,
+        "left": 62,
+        "right": 266
+      }
+    ]
+  }
+}
