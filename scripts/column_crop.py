@@ -11,11 +11,11 @@ from PIL import Image
 
 DEFAULT_ORDER = "rtl"
 DEFAULT_GAP = 0
-DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/column_views")
-DEFAULT_LEFT_PADDING = 15
-DEFAULT_RIGHT_PADDING = 15
-DEFAULT_TOP_PADDING = 15
-DEFAULT_BOTTOM_PADDING = 15
+DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray/column_views")
+DEFAULT_LEFT_PADDING = 20
+DEFAULT_RIGHT_PADDING = 20
+DEFAULT_TOP_PADDING = 0
+DEFAULT_BOTTOM_PADDING = 0
 
 
 @dataclass(frozen=True)

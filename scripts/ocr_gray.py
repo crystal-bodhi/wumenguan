@@ -8,8 +8,8 @@ from PIL import Image
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
-DEFAULT_INPUT_DIR = Path("data/branch_a_preservation/page_views")
-DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray")
+DEFAULT_INPUT_DIR = Path("data/branch_a_preservation/NDL/page_views")
+DEFAULT_OUTPUT_DIR = Path("data/branch_b_fidelity_gray/NDL/")
 DEFAULT_PRESET = SCRIPT_DIR / "presets" / "ocr_gray" / "ocr_gray_baseline.json"
 DEFAULT_PARAMS = {
     "deskew_enabled": True,
