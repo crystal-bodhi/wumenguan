@@ -1,0 +1,95 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0021--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "source": "template-fit",
+  "template_path": "/home/nathaniel/code/work/wumenguan/data/templates/column-layout-right.json",
+  "template_name": "column-layout-right",
+  "template_version": 3,
+  "parity": "odd",
+  "fitted_shift_x": 24,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3062,
+  "padding": {
+    "left": 8,
+    "right": 8,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "expected_columns": 8,
+  "expected_width": 246,
+  "width_tolerance": 32,
+  "centerlines": [
+    1875,
+    1657,
+    1408,
+    1164,
+    920,
+    673,
+    429,
+    183
+  ],
+  "drift_range": {
+    "default_x": 24,
+    "outer_columns_x": 34,
+    "y": 0
+  },
+  "tilt_model": {
+    "mode": "none",
+    "slope_px_per_1000y": 0,
+    "max_abs_slope_px_per_1000y": 10
+  },
+  "inner_frame_hint": {
+    "left": 42,
+    "right": 2004,
+    "top": 22,
+    "bottom": 2961
+  },
+  "columns": [
+    {
+      "index": 1,
+      "left": 1805,
+      "right": 1994
+    },
+    {
+      "index": 2,
+      "left": 1557,
+      "right": 1805
+    },
+    {
+      "index": 3,
+      "left": 1307,
+      "right": 1557
+    },
+    {
+      "index": 4,
+      "left": 1070,
+      "right": 1307
+    },
+    {
+      "index": 5,
+      "left": 819,
+      "right": 1070
+    },
+    {
+      "index": 6,
+      "left": 576,
+      "right": 819
+    },
+    {
+      "index": 7,
+      "left": 330,
+      "right": 576
+    },
+    {
+      "index": 8,
+      "left": 84,
+      "right": 330
+    }
+  ],
+  "warnings": [
+    "At least one fitted column width exceeds tolerance from expected width 246 +/- 32"
+  ]
+}

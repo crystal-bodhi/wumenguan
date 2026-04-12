@@ -1,0 +1,120 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0019--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "source": "template-fit",
+  "template_path": "/home/nathaniel/code/work/wumenguan/data/templates/column-layout-right.json",
+  "template_name": "column-layout-right",
+  "template_version": 3,
+  "parity": "odd",
+  "fitted_shift_x": 0,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3062,
+  "padding": {
+    "left": 8,
+    "right": 8,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "expected_columns": 8,
+  "expected_width": 246,
+  "width_tolerance": 32,
+  "centerlines": [
+    1875,
+    1657,
+    1408,
+    1164,
+    920,
+    673,
+    429,
+    183
+  ],
+  "drift_range": {
+    "default_x": 24,
+    "outer_columns_x": 34,
+    "y": 0
+  },
+  "tilt_model": {
+    "mode": "none",
+    "slope_px_per_1000y": 0,
+    "max_abs_slope_px_per_1000y": 10
+  },
+  "boundary_refinement": {
+    "mode": "snap_to_local_minimum",
+    "internal_search_radius_px": 45,
+    "outer_search_radius_px": 24,
+    "min_gutter_width_px": 18,
+    "score_region_top": 120,
+    "score_region_bottom": 2974,
+    "prefer_extra_gutter_over_tight_crop": true
+  },
+  "inner_frame_hint": {
+    "left": 41,
+    "right": 1974,
+    "top": 22,
+    "bottom": 2961
+  },
+  "columns": [
+    {
+      "index": 1,
+      "left": 1799,
+      "right": 1965,
+      "center": 1847,
+      "template_width": 187
+    },
+    {
+      "index": 2,
+      "left": 1555,
+      "right": 1799,
+      "center": 1632,
+      "template_width": 244
+    },
+    {
+      "index": 3,
+      "left": 1307,
+      "right": 1555,
+      "center": 1387,
+      "template_width": 246
+    },
+    {
+      "index": 4,
+      "left": 1069,
+      "right": 1307,
+      "center": 1147,
+      "template_width": 234
+    },
+    {
+      "index": 5,
+      "left": 826,
+      "right": 1069,
+      "center": 906,
+      "template_width": 247
+    },
+    {
+      "index": 6,
+      "left": 589,
+      "right": 826,
+      "center": 663,
+      "template_width": 239
+    },
+    {
+      "index": 7,
+      "left": 346,
+      "right": 589,
+      "center": 423,
+      "template_width": 243
+    },
+    {
+      "index": 8,
+      "left": 53,
+      "right": 346,
+      "center": 180,
+      "template_width": 242
+    }
+  ],
+  "warnings": [
+    "At least one fitted column width exceeds per-column template tolerance +/- 32"
+  ]
+}

@@ -73,6 +73,7 @@ Use these scripts:
   - scales template to page size
   - uses template drift ranges and expected-width tolerances
   - searches small global x-shift within template limits
+  - may refine split anchors by snapping to local vertical-ink minima when template provides `boundary_refinement`
   - emits proposal JSON and optional overlay
 - `scripts/column_detect.py`
   - fallback detector-first proposal path

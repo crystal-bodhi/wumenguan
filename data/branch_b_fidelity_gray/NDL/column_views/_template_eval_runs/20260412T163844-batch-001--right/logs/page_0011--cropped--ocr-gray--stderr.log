@@ -1,0 +1,215 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0011--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "source": "template-fit",
+  "template_path": "/home/nathaniel/code/work/wumenguan/data/templates/column-layout-right.json",
+  "template_name": "column-layout-right",
+  "template_version": 3,
+  "parity": "odd",
+  "fitted_shift_x": 0,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3094,
+  "padding": {
+    "left": 8,
+    "right": 8,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "expected_columns": 8,
+  "expected_width": 246,
+  "width_tolerance": 32,
+  "centerlines": [
+    1875,
+    1657,
+    1408,
+    1164,
+    920,
+    673,
+    429,
+    183
+  ],
+  "drift_range": {
+    "default_x": 24,
+    "outer_columns_x": 34,
+    "y": 0
+  },
+  "tilt_model": {
+    "mode": "none",
+    "slope_px_per_1000y": 0,
+    "max_abs_slope_px_per_1000y": 10
+  },
+  "boundary_refinement": {
+    "mode": "snap_to_local_minimum",
+    "internal_search_radius_px": 45,
+    "outer_search_radius_px": 24,
+    "min_gutter_width_px": 18,
+    "score_region_top": 120,
+    "score_region_bottom": 2974,
+    "prefer_extra_gutter_over_tight_crop": true
+  },
+  "inner_frame_hint": {
+    "left": 42,
+    "right": 2004,
+    "top": 22,
+    "bottom": 2992
+  },
+  "boundary_scores": [
+    {
+      "name": "column_1_outer_left",
+      "x": 84,
+      "search_radius": 24,
+      "local_min_x": 94,
+      "chosen_value": 40834.73,
+      "local_min_value": 16004.0,
+      "excess_over_local_min": 24830.73,
+      "status": "bad"
+    },
+    {
+      "name": "split_1_2",
+      "x": 267,
+      "search_radius": 45,
+      "local_min_x": 222,
+      "chosen_value": 163127.82,
+      "local_min_value": 107213.36,
+      "excess_over_local_min": 55914.45,
+      "status": "bad"
+    },
+    {
+      "name": "split_2_3",
+      "x": 562,
+      "search_radius": 45,
+      "local_min_x": 562,
+      "chosen_value": 157233.73,
+      "local_min_value": 157233.73,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "split_3_4",
+      "x": 772,
+      "search_radius": 45,
+      "local_min_x": 772,
+      "chosen_value": 158914.64,
+      "local_min_value": 158914.64,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "split_4_5",
+      "x": 1001,
+      "search_radius": 45,
+      "local_min_x": 992,
+      "chosen_value": 126354.45,
+      "local_min_value": 111436.36,
+      "excess_over_local_min": 14918.09,
+      "status": "ok"
+    },
+    {
+      "name": "split_5_6",
+      "x": 1328,
+      "search_radius": 45,
+      "local_min_x": 1373,
+      "chosen_value": 134118.27,
+      "local_min_value": 121973.45,
+      "excess_over_local_min": 12144.82,
+      "status": "ok"
+    },
+    {
+      "name": "split_6_7",
+      "x": 1559,
+      "search_radius": 45,
+      "local_min_x": 1604,
+      "chosen_value": 124897.27,
+      "local_min_value": 102402.64,
+      "excess_over_local_min": 22494.64,
+      "status": "suspect"
+    },
+    {
+      "name": "split_7_8",
+      "x": 1826,
+      "search_radius": 45,
+      "local_min_x": 1863,
+      "chosen_value": 134598.73,
+      "local_min_value": 97162.64,
+      "excess_over_local_min": 37436.09,
+      "status": "bad"
+    },
+    {
+      "name": "column_8_outer_right",
+      "x": 1988,
+      "search_radius": 24,
+      "local_min_x": 1988,
+      "chosen_value": 166264.18,
+      "local_min_value": 166264.18,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    }
+  ],
+  "columns": [
+    {
+      "index": 1,
+      "left": 1826,
+      "right": 1988,
+      "center": 1875,
+      "template_width": 189
+    },
+    {
+      "index": 2,
+      "left": 1559,
+      "right": 1826,
+      "center": 1657,
+      "template_width": 248
+    },
+    {
+      "index": 3,
+      "left": 1328,
+      "right": 1559,
+      "center": 1408,
+      "template_width": 250
+    },
+    {
+      "index": 4,
+      "left": 1001,
+      "right": 1328,
+      "center": 1164,
+      "template_width": 237
+    },
+    {
+      "index": 5,
+      "left": 772,
+      "right": 1001,
+      "center": 920,
+      "template_width": 251
+    },
+    {
+      "index": 6,
+      "left": 562,
+      "right": 772,
+      "center": 673,
+      "template_width": 243
+    },
+    {
+      "index": 7,
+      "left": 267,
+      "right": 562,
+      "center": 429,
+      "template_width": 246
+    },
+    {
+      "index": 8,
+      "left": 84,
+      "right": 267,
+      "center": 183,
+      "template_width": 246
+    }
+  ],
+  "warnings": [
+    "At least one fitted column width exceeds per-column template tolerance +/- 52",
+    "column_1_outer_left_cuts_live_ink",
+    "split_1_2_cuts_live_ink",
+    "split_7_8_cuts_live_ink"
+  ]
+}

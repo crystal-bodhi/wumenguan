@@ -1,0 +1,213 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0027--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "source": "template-fit",
+  "template_path": "/home/nathaniel/code/work/wumenguan/data/templates/column-layout-right.json",
+  "template_name": "column-layout-right",
+  "template_version": 3,
+  "parity": "odd",
+  "fitted_shift_x": -12,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3062,
+  "padding": {
+    "left": 8,
+    "right": 8,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "expected_columns": 8,
+  "expected_width": 246,
+  "width_tolerance": 32,
+  "centerlines": [
+    1875,
+    1657,
+    1408,
+    1164,
+    920,
+    673,
+    429,
+    183
+  ],
+  "drift_range": {
+    "default_x": 24,
+    "outer_columns_x": 34,
+    "y": 0
+  },
+  "tilt_model": {
+    "mode": "none",
+    "slope_px_per_1000y": 0,
+    "max_abs_slope_px_per_1000y": 10
+  },
+  "boundary_refinement": {
+    "mode": "snap_to_local_minimum",
+    "internal_search_radius_px": 45,
+    "outer_search_radius_px": 24,
+    "min_gutter_width_px": 18,
+    "score_region_top": 120,
+    "score_region_bottom": 2974,
+    "prefer_extra_gutter_over_tight_crop": true
+  },
+  "inner_frame_hint": {
+    "left": 41,
+    "right": 1974,
+    "top": 22,
+    "bottom": 2961
+  },
+  "boundary_scores": [
+    {
+      "name": "column_1_outer_left",
+      "x": 32,
+      "search_radius": 24,
+      "local_min_x": 8,
+      "chosen_value": 29682.45,
+      "local_min_value": 9662.55,
+      "excess_over_local_min": 20019.91,
+      "status": "bad"
+    },
+    {
+      "name": "split_1_2",
+      "x": 334,
+      "search_radius": 45,
+      "local_min_x": 337,
+      "chosen_value": 69636.64,
+      "local_min_value": 69442.18,
+      "excess_over_local_min": 194.45,
+      "status": "ok"
+    },
+    {
+      "name": "split_2_3",
+      "x": 577,
+      "search_radius": 45,
+      "local_min_x": 582,
+      "chosen_value": 89332.73,
+      "local_min_value": 85443.45,
+      "excess_over_local_min": 3889.27,
+      "status": "ok"
+    },
+    {
+      "name": "split_3_4",
+      "x": 791,
+      "search_radius": 45,
+      "local_min_x": 791,
+      "chosen_value": 102461.55,
+      "local_min_value": 102461.55,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "split_4_5",
+      "x": 1050,
+      "search_radius": 45,
+      "local_min_x": 1050,
+      "chosen_value": 136897.18,
+      "local_min_value": 136897.18,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "split_5_6",
+      "x": 1291,
+      "search_radius": 45,
+      "local_min_x": 1291,
+      "chosen_value": 108074.64,
+      "local_min_value": 108074.64,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "split_6_7",
+      "x": 1489,
+      "search_radius": 45,
+      "local_min_x": 1489,
+      "chosen_value": 123732.45,
+      "local_min_value": 123732.45,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "split_7_8",
+      "x": 1779,
+      "search_radius": 45,
+      "local_min_x": 1779,
+      "chosen_value": 156660.73,
+      "local_min_value": 156660.73,
+      "excess_over_local_min": 0.0,
+      "status": "ok"
+    },
+    {
+      "name": "column_8_outer_right",
+      "x": 1953,
+      "search_radius": 24,
+      "local_min_x": 1955,
+      "chosen_value": 119574.64,
+      "local_min_value": 118677.18,
+      "excess_over_local_min": 897.45,
+      "status": "ok"
+    }
+  ],
+  "columns": [
+    {
+      "index": 1,
+      "left": 1779,
+      "right": 1953,
+      "center": 1835,
+      "template_width": 187
+    },
+    {
+      "index": 2,
+      "left": 1489,
+      "right": 1779,
+      "center": 1620,
+      "template_width": 244
+    },
+    {
+      "index": 3,
+      "left": 1291,
+      "right": 1489,
+      "center": 1375,
+      "template_width": 246
+    },
+    {
+      "index": 4,
+      "left": 1050,
+      "right": 1291,
+      "center": 1135,
+      "template_width": 234
+    },
+    {
+      "index": 5,
+      "left": 791,
+      "right": 1050,
+      "center": 894,
+      "template_width": 247
+    },
+    {
+      "index": 6,
+      "left": 577,
+      "right": 791,
+      "center": 651,
+      "template_width": 239
+    },
+    {
+      "index": 7,
+      "left": 334,
+      "right": 577,
+      "center": 411,
+      "template_width": 243
+    },
+    {
+      "index": 8,
+      "left": 32,
+      "right": 334,
+      "center": 168,
+      "template_width": 242
+    }
+  ],
+  "warnings": [
+    "At least one fitted column width exceeds per-column template tolerance +/- 52",
+    "column_1_outer_left_cuts_live_ink"
+  ]
+}

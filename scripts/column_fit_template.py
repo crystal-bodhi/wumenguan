@@ -93,6 +93,17 @@ def compute_projection(image: Image.Image, top: int, bottom: int) -> list[float]
     return values
 
 
+def smooth(values: list[float], radius: int) -> list[float]:
+    if radius <= 0:
+        return values[:]
+    out: list[float] = []
+    for idx in range(len(values)):
+        lo = max(0, idx - radius)
+        hi = min(len(values), idx + radius + 1)
+        out.append(sum(values[lo:hi]) / (hi - lo))
+    return out
+
+
 def score_shift(columns: list[dict[str, int]], shift: int, projection: list[float]) -> float:
     total = 0.0
     width = len(projection)
@@ -102,7 +113,8 @@ def score_shift(columns: list[dict[str, int]], shift: int, projection: list[floa
         if left >= right:
             continue
         total += sum(projection[left:right])
-    return total
+    penalty = abs(shift) * max(total * 0.0008, 5000.0)
+    return total - penalty
 
 
 def fit_shift(columns: list[dict[str, int]], projection: list[float], shift_limit: int, shift_step: int) -> int:
@@ -123,8 +135,162 @@ def apply_shift(columns: list[dict[str, int]], shift: int, image_width: int) -> 
         right = max(0, min(image_width, column["right"] + shift))
         if left >= right:
             right = min(image_width, left + 1)
-        shifted.append({"index": column["index"], "left": left, "right": right})
+        shifted.append(
+            {
+                "index": column["index"],
+                "left": left,
+                "right": right,
+                "center": max(0, min(image_width, column["center"] + shift)),
+                "template_width": column["width"],
+            }
+        )
     return shifted
+
+
+def choose_minimum_index(
+    values: list[float],
+    anchor: int,
+    radius: int,
+    image_width: int,
+) -> int:
+    lo = max(0, anchor - radius)
+    hi = min(image_width - 1, anchor + radius)
+    best_x = anchor
+    best_value = values[anchor]
+    for x in range(lo, hi + 1):
+        value = values[x]
+        if value < best_value or (value == best_value and abs(x - anchor) < abs(best_x - anchor)):
+            best_x = x
+            best_value = value
+    return best_x
+
+
+def boundary_diagnostics(
+    columns: list[dict[str, int]],
+    projection: list[float],
+    template: dict[str, Any],
+    image_width: int,
+) -> list[dict[str, Any]]:
+    refinement = template.get("boundary_refinement", {})
+    internal_radius = 0
+    outer_radius = 0
+    if isinstance(refinement, dict):
+        internal_radius = int(refinement.get("internal_search_radius_px", 0))
+        outer_radius = int(refinement.get("outer_search_radius_px", 0))
+
+    diagnostics: list[dict[str, Any]] = []
+    smoothed = smooth(projection, radius=5)
+    ordered = list(reversed(columns))
+
+    left_outer_x = ordered[0]["left"]
+    left_outer_min = choose_minimum_index(smoothed, left_outer_x, outer_radius, image_width)
+    diagnostics.append(
+        make_boundary_record(
+            name="column_1_outer_left",
+            x=left_outer_x,
+            local_min_x=left_outer_min,
+            values=smoothed,
+            radius=outer_radius,
+        )
+    )
+
+    for idx in range(len(ordered) - 1):
+        boundary_x = ordered[idx]["right"]
+        local_min_x = choose_minimum_index(smoothed, boundary_x, internal_radius, image_width)
+        diagnostics.append(
+            make_boundary_record(
+                name=f"split_{idx + 1}_{idx + 2}",
+                x=boundary_x,
+                local_min_x=local_min_x,
+                values=smoothed,
+                radius=internal_radius,
+            )
+        )
+
+    right_outer_x = ordered[-1]["right"]
+    right_outer_min = choose_minimum_index(smoothed, right_outer_x, outer_radius, image_width)
+    diagnostics.append(
+        make_boundary_record(
+            name=f"column_{len(columns)}_outer_right",
+            x=right_outer_x,
+            local_min_x=right_outer_min,
+            values=smoothed,
+            radius=outer_radius,
+        )
+    )
+    return diagnostics
+
+
+def make_boundary_record(
+    name: str,
+    x: int,
+    local_min_x: int,
+    values: list[float],
+    radius: int,
+) -> dict[str, Any]:
+    chosen_value = values[x]
+    local_min_value = values[local_min_x]
+    excess = chosen_value - local_min_value
+    if excess <= max(4000.0, local_min_value * 0.15):
+        status = "ok"
+    elif excess <= max(8000.0, local_min_value * 0.35):
+        status = "suspect"
+    else:
+        status = "bad"
+    return {
+        "name": name,
+        "x": x,
+        "search_radius": radius,
+        "local_min_x": local_min_x,
+        "chosen_value": round(chosen_value, 2),
+        "local_min_value": round(local_min_value, 2),
+        "excess_over_local_min": round(excess, 2),
+        "status": status,
+    }
+
+
+def refine_boundaries(
+    columns: list[dict[str, int]],
+    projection: list[float],
+    template: dict[str, Any],
+    image_width: int,
+) -> list[dict[str, int]]:
+    refinement = template.get("boundary_refinement")
+    if not isinstance(refinement, dict):
+        return columns
+    if refinement.get("mode") != "snap_to_local_minimum":
+        return columns
+
+    internal_radius = int(refinement.get("internal_search_radius_px", 0))
+    outer_radius = int(refinement.get("outer_search_radius_px", 0))
+    smoothed = smooth(projection, radius=5)
+
+    left_outer = choose_minimum_index(smoothed, columns[-1]["left"], outer_radius, image_width)
+    right_outer = choose_minimum_index(smoothed, columns[0]["right"], outer_radius, image_width)
+
+    split_positions: list[int] = []
+    for idx in range(len(columns) - 1):
+        anchor = columns[idx]["left"]
+        split_positions.append(choose_minimum_index(smoothed, anchor, internal_radius, image_width))
+
+    ordered = list(reversed(columns))
+    refined_left_to_right: list[dict[str, int]] = []
+    boundaries = [left_outer] + list(reversed(split_positions)) + [right_outer]
+    min_width = max(1, int(template.get("expected_width", 1)) // 3)
+    for idx, column in enumerate(ordered):
+        left = boundaries[idx]
+        right = boundaries[idx + 1]
+        if right - left < min_width:
+            left = column["left"]
+            right = column["right"]
+        refined_left_to_right.append(
+            {
+                **column,
+                "left": max(0, left),
+                "right": min(image_width, right),
+            }
+        )
+    return list(reversed(refined_left_to_right))
 
 
 def build_payload(
@@ -136,6 +302,7 @@ def build_payload(
     columns: list[dict[str, int]],
     shift: int,
     inner_frame_hint: dict[str, int] | None,
+    projection: list[float],
 ) -> dict[str, Any]:
     widths = [column["right"] - column["left"] for column in columns]
     warnings: list[str] = []
@@ -149,15 +316,35 @@ def build_payload(
     if widths:
         expected_width = int(template.get("expected_width", sorted(widths)[len(widths) // 2]))
         width_tolerance = int(template.get("width_tolerance", max(24, expected_width // 6)))
-        if any(abs(width - expected_width) > width_tolerance for width in widths):
+        refinement = template.get("boundary_refinement", {})
+        refinement_radius = 0
+        if isinstance(refinement, dict):
+            refinement_radius = max(
+                int(refinement.get("internal_search_radius_px", 0)),
+                int(refinement.get("outer_search_radius_px", 0)),
+            )
+        effective_width_tolerance = width_tolerance + min(20, refinement_radius // 2)
+        if any(
+            abs((column["right"] - column["left"]) - int(column.get("template_width", expected_width))) > effective_width_tolerance
+            for column in columns
+        ):
             warnings.append(
-                f"At least one fitted column width exceeds tolerance from expected width {expected_width} +/- {width_tolerance}"
+                f"At least one fitted column width exceeds per-column template tolerance +/- {effective_width_tolerance}"
             )
         median_width = sorted(widths)[len(widths) // 2]
         if any(width > max(320, median_width * 2) for width in widths):
             warnings.append("At least one fitted column is much wider than peers")
         if any(width < 60 for width in widths):
             warnings.append("At least one fitted column is very narrow")
+    diagnostics = boundary_diagnostics(columns, projection=projection, template=template, image_width=len(projection))
+    bad_boundaries = [item for item in diagnostics if item["status"] == "bad"]
+    suspect_boundaries = [item for item in diagnostics if item["status"] == "suspect"]
+    if bad_boundaries:
+        for item in bad_boundaries:
+            warnings.append(f"{item['name']}_cuts_live_ink")
+    elif suspect_boundaries:
+        for item in suspect_boundaries:
+            warnings.append(f"{item['name']}_not_in_clean_gutter")
     return {
         "input_image": input_image.resolve(strict=False).as_posix(),
         "proposal_version": 1,
@@ -184,7 +371,9 @@ def build_payload(
         "centerlines": template.get("centerlines"),
         "drift_range": template.get("drift_range"),
         "tilt_model": template.get("tilt_model"),
+        "boundary_refinement": template.get("boundary_refinement"),
         "inner_frame_hint": inner_frame_hint,
+        "boundary_scores": diagnostics,
         "columns": columns,
         "warnings": warnings,
     }
@@ -235,7 +424,13 @@ def main() -> int:
         template = load_template(template_path)
         with Image.open(input_image) as image:
             top, bottom, scaled_columns, inner_frame_hint = scale_template(template, image.width, image.height)
-            projection = compute_projection(image, top=top, bottom=bottom)
+            refinement = template.get("boundary_refinement", {})
+            score_top = top
+            score_bottom = bottom
+            if isinstance(refinement, dict):
+                score_top = max(top, int(refinement.get("score_region_top", top)))
+                score_bottom = min(bottom, int(refinement.get("score_region_bottom", bottom)))
+            projection = compute_projection(image, top=score_top, bottom=score_bottom)
         drift_range = template.get("drift_range", {})
         template_shift_limit = int(drift_range.get("outer_columns_x", drift_range.get("default_x", 24))) if isinstance(drift_range, dict) else 24
         shift = fit_shift(
@@ -245,6 +440,12 @@ def main() -> int:
             shift_step=args.shift_step,
         )
         fitted_columns = apply_shift(scaled_columns, shift=shift, image_width=len(projection))
+        fitted_columns = refine_boundaries(
+            fitted_columns,
+            projection=projection,
+            template=template,
+            image_width=len(projection),
+        )
         payload = build_payload(
             input_image=input_image,
             template_path=template_path,
@@ -254,6 +455,7 @@ def main() -> int:
             columns=fitted_columns,
             shift=shift,
             inner_frame_hint=inner_frame_hint,
+            projection=projection,
         )
         if args.output_json:
             args.output_json.parent.mkdir(parents=True, exist_ok=True)

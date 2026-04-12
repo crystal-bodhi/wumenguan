@@ -1,0 +1,109 @@
+{
+  "input_image": "/home/nathaniel/code/work/wumenguan/data/branch_b_fidelity_gray/NDL/page_views/page_0021--cropped--ocr-gray.png",
+  "proposal_version": 1,
+  "goal": "Produce per-column crops suitable for later OCR/transcription without bisecting characters.",
+  "source": "template-fit",
+  "template_path": "/home/nathaniel/code/work/wumenguan/data/templates/column-layout-right.json",
+  "template_name": "column-layout-right",
+  "template_version": 3,
+  "parity": "odd",
+  "fitted_shift_x": 0,
+  "order": "rtl",
+  "top": 0,
+  "bottom": 3062,
+  "padding": {
+    "left": 8,
+    "right": 8,
+    "top": 0,
+    "bottom": 0
+  },
+  "mode": "explicit",
+  "expected_columns": 8,
+  "expected_width": 246,
+  "width_tolerance": 32,
+  "centerlines": [
+    1875,
+    1657,
+    1408,
+    1164,
+    920,
+    673,
+    429,
+    183
+  ],
+  "drift_range": {
+    "default_x": 24,
+    "outer_columns_x": 34,
+    "y": 0
+  },
+  "tilt_model": {
+    "mode": "none",
+    "slope_px_per_1000y": 0,
+    "max_abs_slope_px_per_1000y": 10
+  },
+  "inner_frame_hint": {
+    "left": 42,
+    "right": 2004,
+    "top": 22,
+    "bottom": 2961
+  },
+  "columns": [
+    {
+      "index": 1,
+      "left": 1781,
+      "right": 1970,
+      "center": 1875,
+      "template_width": 189
+    },
+    {
+      "index": 2,
+      "left": 1533,
+      "right": 1781,
+      "center": 1657,
+      "template_width": 248
+    },
+    {
+      "index": 3,
+      "left": 1283,
+      "right": 1533,
+      "center": 1408,
+      "template_width": 250
+    },
+    {
+      "index": 4,
+      "left": 1046,
+      "right": 1283,
+      "center": 1164,
+      "template_width": 237
+    },
+    {
+      "index": 5,
+      "left": 795,
+      "right": 1046,
+      "center": 920,
+      "template_width": 251
+    },
+    {
+      "index": 6,
+      "left": 552,
+      "right": 795,
+      "center": 673,
+      "template_width": 243
+    },
+    {
+      "index": 7,
+      "left": 306,
+      "right": 552,
+      "center": 429,
+      "template_width": 246
+    },
+    {
+      "index": 8,
+      "left": 60,
+      "right": 306,
+      "center": 183,
+      "template_width": 246
+    }
+  ],
+  "warnings": []
+}
