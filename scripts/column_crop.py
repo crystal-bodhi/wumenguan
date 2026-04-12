@@ -12,6 +12,10 @@ from PIL import Image
 DEFAULT_ORDER = "rtl"
 DEFAULT_GAP = 0
 DEFAULT_OUTPUT_DIR = Path("data/branch_a_preservation/column_views")
+DEFAULT_LEFT_PADDING = 15
+DEFAULT_RIGHT_PADDING = 15
+DEFAULT_TOP_PADDING = 15
+DEFAULT_BOTTOM_PADDING = 15
 
 
 @dataclass(frozen=True)
@@ -313,18 +317,43 @@ def print_plan(
     bottom: int,
     order: str,
     columns: list[ColumnSlice],
+    image_width: int,
+    image_height: int,
 ) -> None:
+    padded_top, padded_bottom = apply_vertical_padding(
+        top=top,
+        bottom=bottom,
+        image_height=image_height,
+    )
     plan = {
         "input_image": input_image.as_posix(),
         "output_dir": output_dir.as_posix(),
         "order": order,
         "top": top,
         "bottom": bottom,
+        "padded_top": padded_top,
+        "padded_bottom": padded_bottom,
+        "padding": {
+            "left": DEFAULT_LEFT_PADDING,
+            "right": DEFAULT_RIGHT_PADDING,
+            "top": DEFAULT_TOP_PADDING,
+            "bottom": DEFAULT_BOTTOM_PADDING,
+        },
         "columns": [
             {
                 "index": column.index,
                 "left": column.left,
                 "right": column.right,
+                "padded_left": apply_horizontal_padding(
+                    left=column.left,
+                    right=column.right,
+                    image_width=image_width,
+                )[0],
+                "padded_right": apply_horizontal_padding(
+                    left=column.left,
+                    right=column.right,
+                    image_width=image_width,
+                )[1],
                 "width": column.width,
                 "output_path": output_path_for_column(output_dir, input_image, column.index).as_posix(),
             }
@@ -345,16 +374,43 @@ def crop_columns(
 
     saved = 0
     with Image.open(input_image) as image:
+        image_width, image_height = image.size
+        padded_top, padded_bottom = apply_vertical_padding(
+            top=top,
+            bottom=bottom,
+            image_height=image_height,
+        )
         for column in columns:
-            crop = image.crop((column.left, top, column.right, bottom))
+            padded_left, padded_right = apply_horizontal_padding(
+                left=column.left,
+                right=column.right,
+                image_width=image_width,
+            )
+            crop = image.crop((padded_left, padded_top, padded_right, padded_bottom))
             output_path = output_path_for_column(output_dir, input_image, column.index)
             crop.save(output_path)
             print(
                 f"Saved {output_path.as_posix()} "
-                f"(left={column.left}, right={column.right}, top={top}, bottom={bottom})"
+                f"(left={padded_left}, right={padded_right}, top={padded_top}, bottom={padded_bottom})"
             )
             saved += 1
     return saved
+
+
+def apply_horizontal_padding(left: int, right: int, image_width: int) -> tuple[int, int]:
+    padded_left = max(0, left - DEFAULT_LEFT_PADDING)
+    padded_right = min(image_width, right + DEFAULT_RIGHT_PADDING)
+    if padded_left >= padded_right:
+        return left, right
+    return padded_left, padded_right
+
+
+def apply_vertical_padding(top: int, bottom: int, image_height: int) -> tuple[int, int]:
+    padded_top = max(0, top - DEFAULT_TOP_PADDING)
+    padded_bottom = min(image_height, bottom + DEFAULT_BOTTOM_PADDING)
+    if padded_top >= padded_bottom:
+        return top, bottom
+    return padded_top, padded_bottom
 
 
 def validate_input_image(input_image: Path) -> None:
@@ -407,6 +463,8 @@ def main() -> int:
                 bottom=bottom,
                 order=order,
                 columns=columns,
+                image_width=width,
+                image_height=height,
             )
             return 0
 
