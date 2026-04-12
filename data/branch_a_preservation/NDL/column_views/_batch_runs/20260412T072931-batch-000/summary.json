@@ -1,0 +1,61 @@
+{
+  "run_id": "20260412T072931-batch-000",
+  "status": "failed",
+  "manifest": "/home/nathaniel/code/work/wumenguan/data/batches/crop/batch-000.txt",
+  "requested": 3,
+  "processed": 3,
+  "completed": 0,
+  "failed": 3,
+  "blocked": 0,
+  "fail_fast": false,
+  "output_dir": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views",
+  "batch_runs_dir": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs",
+  "run_dir": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000",
+  "prompts_dir": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/prompts",
+  "logs_dir": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/logs",
+  "traces_dir": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/traces",
+  "status_tsv": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/status.tsv",
+  "summary_json": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/summary.json",
+  "summary_md": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/summary.md",
+  "items": [
+    {
+      "index": 0,
+      "page_stem": "page_0006--cropped",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/batches/crop/data/branch_a_preservation/NDL/page_views/page_0006--cropped.png",
+      "prompt_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/prompts/page_0006--cropped--prompt.md",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/logs/page_0006--cropped--stderr.log",
+      "trace_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/traces/page_0006--cropped--trace.jsonl",
+      "status": "failed",
+      "reason": "source image path does not exist",
+      "exit_code": null,
+      "output_count": 0,
+      "output_files": []
+    },
+    {
+      "index": 1,
+      "page_stem": "page_0008--cropped",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/batches/crop/data/branch_a_preservation/NDL/page_views/page_0008--cropped.png",
+      "prompt_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/prompts/page_0008--cropped--prompt.md",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/logs/page_0008--cropped--stderr.log",
+      "trace_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/traces/page_0008--cropped--trace.jsonl",
+      "status": "failed",
+      "reason": "source image path does not exist",
+      "exit_code": null,
+      "output_count": 0,
+      "output_files": []
+    },
+    {
+      "index": 2,
+      "page_stem": "page_0009--cropped",
+      "input_image": "/home/nathaniel/code/work/wumenguan/data/batches/crop/data/branch_a_preservation/NDL/page_views/page_0009--cropped.png",
+      "prompt_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/prompts/page_0009--cropped--prompt.md",
+      "log_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/logs/page_0009--cropped--stderr.log",
+      "trace_file": "/home/nathaniel/code/work/wumenguan/data/branch_a_preservation/column_views/_batch_runs/20260412T072931-batch-000/traces/page_0009--cropped--trace.jsonl",
+      "status": "failed",
+      "reason": "source image path does not exist",
+      "exit_code": null,
+      "output_count": 0,
+      "output_files": []
+    }
+  ]
+}
