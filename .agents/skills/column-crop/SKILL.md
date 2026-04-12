@@ -71,7 +71,8 @@ Use these scripts:
 - `scripts/column_fit_template.py`
   - loads parity-specific left/right page template
   - scales template to page size
-  - searches small global x-shift
+  - uses template drift ranges and expected-width tolerances
+  - searches small global x-shift within template limits
   - emits proposal JSON and optional overlay
 - `scripts/column_detect.py`
   - fallback detector-first proposal path
@@ -120,6 +121,7 @@ python scripts/column_crop.py input/page.png \
 - One ordered PNG file per detected reading column.
 - A defensible crop plan suited for later OCR/transcription.
 - Clear report of:
+  - template name/version
   - mode used
   - `top`, `bottom`, `order`
   - padding values

@@ -11,6 +11,7 @@ Required behavior:
 - do not compare against, inspect, or incorporate any other page
 - keep downstream goal in view: produce crops suitable for later OCR/transcription without bisecting characters
 - use parity-specific template fitting first
+- respect template drift ranges and expected-width tolerances
 - only use detector-first proposal path as fallback or diagnostic comparison when template fit looks wrong
 - review structured proposal, not raw shell arguments, unless proposal path is blocked
 - run `scripts/column_crop.py --proposal ... --dry-run` before final write
