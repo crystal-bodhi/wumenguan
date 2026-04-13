@@ -65,9 +65,9 @@ Use `data/alignment/source_column_alignment.md` to derive page-level witness pac
 
 Example:
 
-- canonical target line range: `wumenguan:19-27`
-- primary witness: `CNTS/page_0011`
-- supporting witnesses: `NDL/page_0010`, `NDL/page_0011`
+- canonical target line range: `wumenguan:37-34`
+- primary witness: `NDL/page_0011`
+- supporting witnesses: `CNTS/page_0011`, `CNTS/page_0012`
 - all images passed as full pages
 - prompt tells child that target transcript lines live within those page spans
 
@@ -98,10 +98,10 @@ Suggested record shape:
 
 ```json
 {
-  "canonical_line_id": "wumenguan:19",
+  "canonical_line_id": "wumenguan:27",
   "witnesses": {
-    "CNTS": { "page_id": "CNTS/page_0011", "line": 1 },
-    "NDL": { "page_id": "NDL/page_0010", "line": 1 }
+    "NDL": { "page_id": "NDL/page_0011", "line": 1 },
+    "CNTS": { "page_id": "CNTS/page_0011", "line": 9 }
   }
 }
 ```
@@ -125,18 +125,28 @@ Suggested pack shape:
 
 ```json
 {
-  "target_id": "wumenguan/lines/19-27",
+  "target_id": "wumenguan/lines/27-34",
   "canonical_span": {
     "source_id": "wumenguan",
-    "start_line": 19,
-    "end_line": 27
+    "start_line": 27,
+    "end_line": 34
   },
-  "primary_witness": "CNTS",
-  "output_page_id": "CNTS/page_0011",
+  "primary_witness": "NDL",
+  "output_page_id": "NDL/page_0011",
   "witness_pages": [
     {
+      "page_id": "NDL/page_0011",
+      "line_span": { "start": 1, "end": 8 },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0011--cropped--ocr-gray.png"
+      }
+    },
+    {
       "page_id": "CNTS/page_0011",
-      "line_span": { "start": 1, "end": 9 },
+      "line_span": { "start": 9, "end": 9 },
       "image_ref": {
         "branch": "branch_b_fidelity_gray",
         "view": "page_views",
@@ -145,23 +155,13 @@ Suggested pack shape:
       }
     },
     {
-      "page_id": "NDL/page_0010",
-      "line_span": { "start": 1, "end": 8 },
+      "page_id": "CNTS/page_0012",
+      "line_span": { "start": 1, "end": 7 },
       "image_ref": {
         "branch": "branch_b_fidelity_gray",
         "view": "page_views",
         "variant": "cropped--ocr-gray",
-        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0010--cropped--ocr-gray.png"
-      }
-    },
-    {
-      "page_id": "NDL/page_0011",
-      "line_span": { "start": 1, "end": 1 },
-      "image_ref": {
-        "branch": "branch_b_fidelity_gray",
-        "view": "page_views",
-        "variant": "cropped--ocr-gray",
-        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0011--cropped--ocr-gray.png"
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0012--cropped--ocr-gray.png"
       }
     }
   ]
@@ -266,17 +266,19 @@ $transcript-ocr
 Process exactly one aligned transcript target in this run.
 
 Target:
-- wumenguan lines 19-26
+- Wumenguan lines 27-34
 
 Primary witness:
-- NDL page_0010 lines 1-8
+- NDL page_0011 lines 1-8
 
 Supporting witnesses:
-- CNTS page_0011 lines 1-8
+- CNTS page_0011 line 9
+- CNTS page_0012 lines 1-7
 
 Attached images:
-- <NDL_PAGE_0010_IMAGE>
+- <NDL_PAGE_0011_IMAGE>
 - <CNTS_PAGE_0011_IMAGE>
+- <CNTS_PAGE_0012_IMAGE>
 
 Rules:
 - produce one transcript file only

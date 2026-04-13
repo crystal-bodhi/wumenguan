@@ -1,16 +1,24 @@
 $transcript-ocr
 
-Process exactly one scan image in this run.
+Process exactly one aligned transcript target in this run.
 
-Input image:
-- <INPUT_IMAGE>
+Target:
+- Wumenguan lines 27-34
 
-Required output file:
-- <OUTPUT_FILE>
+Primary witness:
+- NDL page_0011 lines 1-8
 
-Execution constraints:
-- use the `$transcript-ocr` skill for the full workflow
-- process only this one image
-- do not compare against, inspect, or incorporate any other page or transcript
-- write the result only to the required output file
-- do not produce any additional transcript files
+Supporting witnesses:
+- CNTS page_0011 line 9
+- CNTS page_0012 lines 1-7
+
+Attached images:
+- <NDL_PAGE_0011_IMAGE>
+- <CNTS_PAGE_0011_IMAGE>
+- <CNTS_PAGE_0012_IMAGE>
+
+Rules:
+- produce one transcript file only
+- use only attached witness-pack images
+- compare only aligned loci named above
+- if witnesses diverge or one witness is missing, mark uncertainty; do not normalize
