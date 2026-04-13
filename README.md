@@ -4,15 +4,15 @@ Please translate and distribute!
 
 **Download**
 
-- [NDL12865429_無門關_1卷--grayscale.pdf](data/source/pdf/NDL12865429_無門關_1卷--grayscale.pdf)
+- [coming soon]
 
 ---
 
-**Origin**
+**Witnesses**
 
-- Source: [National Diet Library](https://commons.wikimedia.org/wiki/File%3ANDL12865429_%E7%84%A1%E9%96%80%E9%97%9C_1%E5%8D%B7.pdf)
+- Primary: [National Diet Library](https://commons.wikimedia.org/wiki/File%3ANDL12865429_%E7%84%A1%E9%96%80%E9%97%9C_1%E5%8D%B7.pdf)
 
-- Alt.: [National Digital Library of Korea](https://commons.wikimedia.org/wiki/File%3ACNTS-00115843217_%E7%A6%AA%E5%AE%97%E7%84%A1%E9%96%80%E9%97%9C.pdf)
+- Secondary: [National Digital Library of Korea](https://commons.wikimedia.org/wiki/File%3ACNTS-00115843217_%E7%A6%AA%E5%AE%97%E7%84%A1%E9%96%80%E9%97%9C.pdf)
 
 - Tools & Process: [scripts/](scripts/)
 
