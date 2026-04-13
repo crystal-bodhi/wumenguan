@@ -1,19 +1,19 @@
 {
-  "target_id": "wumenguan/lines/27-34",
-  "output_stub": "page_0011",
+  "target_id": "wumenguan/lines/105-112",
+  "output_stub": "page_0021",
   "canonical_span": {
     "source_id": "wumenguan",
-    "start_line": 27,
-    "end_line": 34
+    "start_line": 105,
+    "end_line": 112
   },
   "primary_witness": "NDL",
-  "output_page_id": "NDL/page_0011",
+  "output_page_id": "NDL/page_0021",
   "witness_pages": [
     {
-      "page_id": "NDL/page_0011",
+      "page_id": "NDL/page_0021",
       "canonical_line_span": {
-        "start": 27,
-        "end": 34
+        "start": 105,
+        "end": 112
       },
       "line_span": {
         "start": 1,
@@ -23,41 +23,41 @@
         "branch": "branch_b_fidelity_gray",
         "view": "page_views",
         "variant": "cropped--ocr-gray",
-        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0011--cropped--ocr-gray.png"
+        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0021--cropped--ocr-gray.png"
       }
     },
     {
-      "page_id": "CNTS/page_0011",
+      "page_id": "CNTS/page_0024",
       "canonical_line_span": {
-        "start": 27,
-        "end": 27
+        "start": 105,
+        "end": 110
       },
       "line_span": {
-        "start": 9,
+        "start": 4,
         "end": 9
       },
       "image_ref": {
         "branch": "branch_b_fidelity_gray",
         "view": "page_views",
         "variant": "cropped--ocr-gray",
-        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0011--cropped--ocr-gray.png"
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0024--cropped--ocr-gray.png"
       }
     },
     {
-      "page_id": "CNTS/page_0012",
+      "page_id": "CNTS/page_0025",
       "canonical_line_span": {
-        "start": 28,
-        "end": 34
+        "start": 111,
+        "end": 112
       },
       "line_span": {
         "start": 1,
-        "end": 7
+        "end": 2
       },
       "image_ref": {
         "branch": "branch_b_fidelity_gray",
         "view": "page_views",
         "variant": "cropped--ocr-gray",
-        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0012--cropped--ocr-gray.png"
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0025--cropped--ocr-gray.png"
       }
     }
   ]

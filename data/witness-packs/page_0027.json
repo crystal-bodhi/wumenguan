@@ -1,0 +1,47 @@
+{
+  "target_id": "wumenguan/lines/153-160",
+  "output_stub": "page_0027",
+  "canonical_span": {
+    "source_id": "wumenguan",
+    "start_line": 153,
+    "end_line": 160
+  },
+  "primary_witness": "NDL",
+  "output_page_id": "NDL/page_0027",
+  "witness_pages": [
+    {
+      "page_id": "NDL/page_0027",
+      "canonical_line_span": {
+        "start": 153,
+        "end": 160
+      },
+      "line_span": {
+        "start": 1,
+        "end": 8
+      },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0027--cropped--ocr-gray.png"
+      }
+    },
+    {
+      "page_id": "CNTS/page_0031",
+      "canonical_line_span": {
+        "start": 153,
+        "end": 160
+      },
+      "line_span": {
+        "start": 1,
+        "end": 8
+      },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0031--cropped--ocr-gray.png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "target_id": "wumenguan/lines/89-96",
+  "output_stub": "page_0019",
+  "canonical_span": {
+    "source_id": "wumenguan",
+    "start_line": 89,
+    "end_line": 96
+  },
+  "primary_witness": "NDL",
+  "output_page_id": "NDL/page_0019",
+  "witness_pages": [
+    {
+      "page_id": "NDL/page_0019",
+      "canonical_line_span": {
+        "start": 89,
+        "end": 96
+      },
+      "line_span": {
+        "start": 1,
+        "end": 8
+      },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/NDL/page_views/page_0019--cropped--ocr-gray.png"
+      }
+    },
+    {
+      "page_id": "CNTS/page_0021",
+      "canonical_line_span": {
+        "start": 89,
+        "end": 91
+      },
+      "line_span": {
+        "start": 7,
+        "end": 9
+      },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0021--cropped--ocr-gray.png"
+      }
+    },
+    {
+      "page_id": "CNTS/page_0022",
+      "canonical_line_span": {
+        "start": 92,
+        "end": 92
+      },
+      "line_span": {
+        "start": 1,
+        "end": 1
+      },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0022--cropped--ocr-gray.png"
+      }
+    },
+    {
+      "page_id": "CNTS/page_0023",
+      "canonical_line_span": {
+        "start": 93,
+        "end": 96
+      },
+      "line_span": {
+        "start": 1,
+        "end": 4
+      },
+      "image_ref": {
+        "branch": "branch_b_fidelity_gray",
+        "view": "page_views",
+        "variant": "cropped--ocr-gray",
+        "path": "data/branch_b_fidelity_gray/CNTS/page_views/page_0023--cropped--ocr-gray.png"
+      }
+    }
+  ]
+}
