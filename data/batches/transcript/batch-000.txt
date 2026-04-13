@@ -1,3 +1,3 @@
-data/branch_b_fidelity_gray/fidelity_gray/page_0006--cropped--ocr-gray.png
-data/branch_b_fidelity_gray/fidelity_gray/page_0008--cropped--ocr-gray.png
-data/branch_b_fidelity_gray/fidelity_gray/page_0009--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/NDL/page_views/page_0006--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/NDL/page_views/page_0008--cropped--ocr-gray.png
+data/branch_b_fidelity_gray/NDL/page_views/page_0009--cropped--ocr-gray.png
