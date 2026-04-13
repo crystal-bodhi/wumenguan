@@ -66,7 +66,24 @@ Execution constraints:
 - process only this one image
 - do not compare against, inspect, or incorporate any other page or transcript
 - append machine-readable progress events with `python scripts/child_status.py progress`
+- every `progress` call must include:
+  - `--file <PROGRESS_FILE>`
+  - `--status <STATUS>`
+  - `--page-stem <PAGE_STEM>`
+  - `--input-image <INPUT_IMAGE>`
+  - `--message '<SHORT STAGE MESSAGE>'`
+- use `<PAGE_STEM>` = output filename stem before `--transcript.md`
+- use `<INPUT_IMAGE>` = exact input image path above
 - write final machine-readable child summary with `python scripts/child_status.py summary`
+- final `summary` call must include:
+  - `--file <SUMMARY_FILE>`
+  - `--status completed`
+  - `--page-stem <PAGE_STEM>`
+  - `--input-image <INPUT_IMAGE>`
+  - `--message 'Completed transcript output.'`
+  - `--output-dir data/transcripts/codex`
+  - `--output-count 1`
+  - `--output-files-json '["<OUTPUT_FILE>"]'`
 - emit these statuses live and in order when successful:
   - `started`
   - `input_validated`
@@ -81,6 +98,8 @@ Execution constraints:
 - emit `transcription_checkpoint` while still drafting long pages or working through uncertainty-marked lines
 - write progress by appending to provided progress artifact only
 - do not rename, replace, rebuild, or backfill progress artifact after fact
+- write `started` immediately after confirming child task scope
+- write `input_validated` immediately after confirming input image exists and output path is target for this run
 - final summary must report exactly one output file: required transcript path
 - write the result only to the required output file
 - do not produce any additional transcript files
@@ -345,11 +364,17 @@ def build_entries(
         raise BatchSetupError(f"manifest has no non-blank lines: {manifest_path}")
 
     manifest_dir = manifest_path.parent
+    workspace_root = Path.cwd().resolve(strict=False)
     entries: list[ManifestEntry] = []
     for index, raw_path in enumerate(manifest_lines):
         source_path = Path(raw_path)
         if not source_path.is_absolute():
-            source_path = manifest_dir / source_path
+            manifest_relative_path = (manifest_dir / source_path).resolve(strict=False)
+            workspace_relative_path = (workspace_root / source_path).resolve(strict=False)
+            if manifest_relative_path.is_file() or not workspace_relative_path.is_file():
+                source_path = manifest_relative_path
+            else:
+                source_path = workspace_relative_path
         source_path = source_path.resolve(strict=False)
         output_path = derive_output_path(
             source_path=source_path,
@@ -468,6 +493,7 @@ def build_child_prompt(entry: ManifestEntry, progress_path: Path, child_summary_
         .replace("<PROGRESS_FILE>", display_path(progress_path))
         .replace("<SUMMARY_FILE>", display_path(child_summary_path))
         .replace("<OUTPUT_FILE>", display_path(entry.output_path))
+        .replace("<PAGE_STEM>", canonical_stub(entry.source_path))
     )
 
 
